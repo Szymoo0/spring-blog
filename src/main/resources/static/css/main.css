@@ -1,0 +1,39 @@
+html {
+	min-height: 100%;
+}
+
+body {
+	min-height: 100%;
+	background: linear-gradient(rgb(74,109,137), rgb(74,109,137), rgb(55,90,118), rgb(55,90,118), rgb(55,90,118));
+}
+
+article {
+	margin-top: 1em;
+}
+
+.user-img-icon {
+	max-width:100%;
+	height: auto;
+	object-fit: contain;
+	border-radius: 50%;
+}
+
+.main-card-bg-color {
+	background-color: rgb(55,90,118);
+	border-width: 0px;
+}
+
+.my-post-column {
+	margin-top: auto; 
+	margin-bottom: auto;
+}
+
+.glue-to-bottom {
+	position: absolute; 
+	bottom: 0px;
+}
+
+.reactoin-links {
+	width:25px;
+	height:25px;
+}
