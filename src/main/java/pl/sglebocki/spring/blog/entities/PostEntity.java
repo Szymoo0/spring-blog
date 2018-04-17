@@ -97,17 +97,11 @@ public class PostEntity {
 		this.author = author;
 	}
 	
-	
 	public String getImageName() {
 		return imageName;
 	}
 	public void setImageName(String imageName) {
 		this.imageName = imageName;
-	}
-	@Override
-	public String toString() {
-		return "PostEntity [id=" + id + ", title=" + title + ", content=" + content + ", creationTime=" + creationTime
-				+ ", lastModificationTime=" + lastModificationTime + "]";
 	}
 	
 }

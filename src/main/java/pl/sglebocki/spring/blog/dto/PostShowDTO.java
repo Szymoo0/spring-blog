@@ -15,7 +15,7 @@ public class PostShowDTO {
 	private String username;
 	private String userAvatar;
 	// user reactions
-	private PostAdditionalInfoDTO additionalInfo;
+	private PostReactionsDTO additionalInfo;
 	
 	public long getId() {
 		return id;
@@ -65,10 +65,10 @@ public class PostShowDTO {
 	public void setUserAvatar(String userAvatar) {
 		this.userAvatar = userAvatar;
 	}
-	public PostAdditionalInfoDTO getAdditionalInfo() {
+	public PostReactionsDTO getAdditionalInfo() {
 		return additionalInfo;
 	}
-	public void setAdditionalInfo(PostAdditionalInfoDTO additionalInfo) {
+	public void setAdditionalInfo(PostReactionsDTO additionalInfo) {
 		this.additionalInfo = additionalInfo;
 	}
 

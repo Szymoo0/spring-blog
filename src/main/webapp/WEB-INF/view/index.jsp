@@ -15,6 +15,9 @@
 
     <link rel="stylesheet" href="/css/main.css"/>
     <script type="text/javascript" src="/js/main.js"></script>
+    
+    <meta name="_csrf" content="${_csrf.token}"/>
+	<meta name="_csrf_header" content="${_csrf.headerName}"/>
 </head>
 <body>
 
@@ -80,12 +83,15 @@
 										<h6 class="card-subtitle mb-2 text-muted"><c:out value = "${post.username}"/></h6>
 										<p class="card-text"><c:out value = "${post.content}"/></p>
 										
-										<div>
-											<img class="reactoin-links like-default" alt="Likes" src="/images/thumb-up.svg"> 
-											<strong>${post.additionalInfo.likes}</strong> 
-											&nbsp&nbsp 
-											<img class="reactoin-links dislike-default" alt="Likes" src="/images/thumb-down.svg"> 
-											<strong>${post.additionalInfo.dislikes}</strong>
+										<div class="reaction-container" data-postId="${post.id}">
+											<button class="btn btn-outline-primary btn-like">
+												<img alt="Likes" src="/images/thumb-up.png"> 
+												<strong>${post.additionalInfo.likes}</strong> 
+											</button>
+											<button class="btn btn-outline-danger btn-dislike">
+												<img alt="Disikes" src="/images/thumb-down.png"> 
+												<strong>${post.additionalInfo.dislikes}</strong>
+											</button>
 										</div>
 										
 										<p class="card-text"><small class="text-muted">Created: <fmt:formatDate type = "both" dateStyle = "short" timeStyle = "short" value = "${post.creationTime}" />

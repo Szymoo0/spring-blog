@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import pl.sglebocki.spring.blog.aspects.ImageManipulationTransaction;
 import pl.sglebocki.spring.blog.dto.DatePeriodDTO;
-import pl.sglebocki.spring.blog.dto.PostAdditionalInfoDTO;
+import pl.sglebocki.spring.blog.dto.PostReactionsDTO;
 import pl.sglebocki.spring.blog.dto.PostShowDTO;
 import pl.sglebocki.spring.blog.dto.PostSaveDTO;
 import pl.sglebocki.spring.blog.entities.PostEntity;
@@ -156,8 +156,8 @@ public class PostDAOJPAImpl implements PostsDAO {
 		return retVal;
 	}
 	
-	private PostAdditionalInfoDTO getPostAdditionalInfo(long postId) {
-		PostAdditionalInfoDTO returnValue = new PostAdditionalInfoDTO();
+	private PostReactionsDTO getPostAdditionalInfo(long postId) {
+		PostReactionsDTO returnValue = new PostReactionsDTO();
 		String queryString = "select " + 
 							"count(CASE WHEN ur.post.id = :postId and ur.reaction = :like THEN 1 END), " +
 							"count(CASE WHEN ur.post.id = :postId and ur.reaction = :dislike THEN 1 END) " + 

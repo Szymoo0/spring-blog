@@ -12,7 +12,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-            	.antMatchers("/css/**", "/js/**", "/images/**", "/dynamicimages/**").permitAll()
+            	.antMatchers("/css/**", "/js/**", "/images/**", "/dynamicimages/**", "/posts/change-reaction").permitAll()
                 .antMatchers("/", "/post/**", "/authentication/login", "/authentication/register", "/authentication/save").permitAll()
                 .anyRequest().authenticated()
                 .and()

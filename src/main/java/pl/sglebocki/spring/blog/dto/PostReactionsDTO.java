@@ -1,13 +1,13 @@
 package pl.sglebocki.spring.blog.dto;
 
-public class PostAdditionalInfoDTO {
+public class PostReactionsDTO {
 	private Long likes;
 	private Long dislikes;
 	
-	public PostAdditionalInfoDTO() {
+	public PostReactionsDTO() {
 		this(0, 0);
 	}
-	public PostAdditionalInfoDTO(long likes, long dislikes) {
+	public PostReactionsDTO(long likes, long dislikes) {
 		this.likes = likes;
 		this.dislikes = dislikes;
 	}
