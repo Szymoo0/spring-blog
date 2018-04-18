@@ -10,7 +10,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="user_reaction")
-@IdClass(CompositeKey.class)
+@IdClass(PostUserReactionCompositeKey.class)
 public class PostUserReactionEntity {
 	
 	public enum ReactionType {
