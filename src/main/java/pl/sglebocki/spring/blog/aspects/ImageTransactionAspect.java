@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import pl.sglebocki.spring.blog.dao.ImageSaver;
+import pl.sglebocki.spring.blog.dao.ImageDAO;
 
 @Component
 @Aspect
@@ -15,19 +15,19 @@ import pl.sglebocki.spring.blog.dao.ImageSaver;
 public class ImageTransactionAspect {
 
 	@Autowired
-	private ImageSaver imageSaver;
+	private ImageDAO imageDAO;
 	
 	@Around("@annotation(pl.sglebocki.spring.blog.aspects.ImageManipulationTransaction)")
 	public Object aroundImageManipulationTransaction(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		Object returnValue = null;
 		try {
-			imageSaver.begin();
+			imageDAO.begin();
 			returnValue = proceedingJoinPoint.proceed();
 		} catch (Throwable e) {
-			imageSaver.rollback();
+			imageDAO.rollback();
 			throw e;
 		}
-		imageSaver.commit();
+		imageDAO.commit();
 		return returnValue;
 	}
 	

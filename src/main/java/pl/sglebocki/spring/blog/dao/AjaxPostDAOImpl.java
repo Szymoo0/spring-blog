@@ -18,7 +18,7 @@ import pl.sglebocki.spring.blog.entities.PostUserReactionEntity.ReactionType;
 import pl.sglebocki.spring.blog.entities.UserEntity;
 
 @Repository
-public class AjaxPostDAOImpl implements AjaxPostDAO {
+class AjaxPostDAOImpl implements AjaxPostDAO {
 
 	@PersistenceContext
 	private EntityManager entityManager;

@@ -13,13 +13,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import pl.sglebocki.spring.blog.services.UserValidatorService;
+import pl.sglebocki.spring.blog.services.UserManagmentService;
 
 @Component
 public class SecurityConfigAuthenticationProvider implements AuthenticationProvider {
 
 	@Autowired
-	UserValidatorService userValidatorService;
+	UserManagmentService userValidatorService;
 	
 	@Override
 	public Authentication authenticate(Authentication auth) throws AuthenticationException {

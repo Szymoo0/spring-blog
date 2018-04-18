@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import pl.sglebocki.spring.blog.dto.UserSaveDTO;
-import pl.sglebocki.spring.blog.services.UserValidatorService;
+import pl.sglebocki.spring.blog.services.UserManagmentService;
 
 @Controller
 public class AuthenticationController {
 
 	@Autowired
-	UserValidatorService userValidatorService;
+	UserManagmentService userValidatorService;
 	
 	@GetMapping("/authentication/register")
 	public String registerForm(Model model) {

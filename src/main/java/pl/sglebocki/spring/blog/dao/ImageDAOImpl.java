@@ -17,32 +17,29 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class ImageSaver {
+class ImageDAOImpl implements ImageDAO {
 
 	@Value("${resources.images}")
 	private String imagePath;
 	private LinkedList<Path> savedImages = new LinkedList<>();
 	private LinkedList<Path> imagesToDelate = new LinkedList<>();
 
-	public ImageSaver() {
+	public ImageDAOImpl() {
 	}
 	
-	public ImageSaver(String imagePath) {
+	public ImageDAOImpl(String imagePath) {
 		this.imagePath = imagePath;
 	}
 	
-	public void begin() {
-		if(savedImages.size() != 0 || imagesToDelate.size() != 0) {
-			throw new IllegalStateException();
-		}
-	}
-	
-	Optional<String> saveImageAndGetImageLink(String userName, MultipartFile image) {
+	@Override
+	public Optional<String> saveImageAndGetImageLink(String userName, MultipartFile image) {
 		if(image != null && !image.isEmpty() && image.getContentType().startsWith("image")) {
 			Date date = new Date();
 			String imageLink = userName + date.getTime() + image.getOriginalFilename();
 			try {
-				image.transferTo(Paths.get(imagePath, imageLink).toFile());
+				Path imageSavePath = Paths.get(imagePath, imageLink);
+				savedImages.add(imageSavePath);
+				image.transferTo(imageSavePath.toFile());
 			} catch (IOException e) {
 				throw new TransactionRollbackException(e);
 			}
@@ -51,12 +48,21 @@ public class ImageSaver {
 		return Optional.empty();
 	}
 	
-	void registerImageLinkToDelete(String imageLink) {
+	@Override
+	public void registerImageLinkToDelete(String imageLink) {
 		if (imageLink != null) {
 			imagesToDelate.push(Paths.get(imagePath.toString(), imageLink));
 		}
 	}
 	
+	@Override
+	public void begin() {
+		if(savedImages.size() != 0 || imagesToDelate.size() != 0) {
+			throw new IllegalStateException();
+		}
+	}
+	
+	@Override
 	public void commit() {
 		while(imagesToDelate.size() != 0) {
 			Path imageToDelete = imagesToDelate.pop();
@@ -70,8 +76,9 @@ public class ImageSaver {
 		savedImages.clear();
 	}
 	
+	@Override
 	public void rollback() {
-		while(imagesToDelate.size() != 0) {
+		while(savedImages.size() != 0) {
 			Path imageToDelete = savedImages.pop();
 			try {
 				Files.deleteIfExists(imageToDelete);

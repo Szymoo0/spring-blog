@@ -12,7 +12,7 @@ import pl.sglebocki.spring.blog.dto.ajax.AjaxPostReactionsResponseDTO;
 
 @Service
 @Transactional(rollbackOn={TransactionRollbackException.class})
-public class AjaxPostServiceImpl implements AjaxPostService {
+class AjaxPostServiceImpl implements AjaxPostService {
 
 	@Autowired
 	AjaxPostDAO ajaxPostDAO;
