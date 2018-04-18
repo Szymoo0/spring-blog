@@ -51,21 +51,7 @@ class AjaxPostDAOImpl implements AjaxPostDAO {
 
 		return getPostReactions(postId);
 	}
-
-	private void addNewReaction(String username, long postId, ReactionType newReactionType) {
-		PostUserReactionEntity newReaction = new PostUserReactionEntity();
-		List<UserEntity> userList = entityManager.createQuery("from UserEntity user where user.username = '" + username + "'", UserEntity.class).getResultList();
-		List<PostEntity> postList = entityManager.createQuery("from PostEntity post where post.id = " + postId, PostEntity.class).getResultList();
-		if(hasListOneElement(userList) && hasListOneElement(postList)) {
-			newReaction.setUser(userList.get(0));
-			newReaction.setPost(postList.get(0));
-		} else {
-			throw new TransactionRollbackException("Can't find user or post to change reaction status.");
-		}
-		newReaction.setReaction(newReactionType);
-		entityManager.persist(newReaction);
-	}
-
+	
 	private ReactionType getReactionTypeFromDTO(AjaxPostReactionsChangeRequestDTO changeReactionRequest) {
 		try {
 			return PostUserReactionEntity.ReactionType.valueOf(changeReactionRequest.getReactionType().toUpperCase());
@@ -86,6 +72,10 @@ class AjaxPostDAOImpl implements AjaxPostDAO {
 		return Optional.empty();
 	}
 	
+	private boolean hasListOneElement(List<?> list) {
+		return list.size() == 1;
+	}
+	
 	private void processExistingReaction(PostUserReactionEntity userReactionEntity, ReactionType newReactionType) {
 		if (userReactionEntity.getReactionType() == newReactionType) {
 			entityManager.remove(userReactionEntity);
@@ -93,9 +83,18 @@ class AjaxPostDAOImpl implements AjaxPostDAO {
 			userReactionEntity.setReaction(newReactionType);
 		}
 	}
-	
-	private boolean hasListOneElement(List<?> list) {
-		return list.size() == 1;
-	}
 
+	private void addNewReaction(String username, long postId, ReactionType newReactionType) {
+		PostUserReactionEntity newReaction = new PostUserReactionEntity();
+		UserEntity user = entityManager.find(UserEntity.class, username);
+		PostEntity post = entityManager.find(PostEntity.class, postId);
+		if(user == null || post == null) {
+			throw new TransactionRollbackException("Can't find user or post to change reaction status.");
+		}
+		newReaction.setUser(user);
+		newReaction.setPost(post);
+		newReaction.setReaction(newReactionType);
+		entityManager.persist(newReaction);
+	}
+	
 }
