@@ -32,3 +32,7 @@ article {
 	position: absolute; 
 	bottom: 0px;
 }
+
+.reaction-container {
+	display: inline;
+}

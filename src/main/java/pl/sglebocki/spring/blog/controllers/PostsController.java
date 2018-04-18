@@ -36,7 +36,10 @@ public class PostsController {
 	}
 	
 	@RequestMapping("/posts/save")
-	public String savePost(@Valid @ModelAttribute("createdPost") PostSaveDTO postToSave, BindingResult bindingResult, Principal principal) {
+	public String savePost(
+			@Valid @ModelAttribute("createdPost") PostSaveDTO postToSave, 
+			BindingResult bindingResult, 
+			Principal principal) {
         if (bindingResult.hasErrors()) {
             return "redirect:/";
         }

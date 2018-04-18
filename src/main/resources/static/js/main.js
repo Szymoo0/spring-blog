@@ -1,9 +1,15 @@
-function setMainCardHeight() {
-	height = $(document).height() - $('#main-card').offset().top;
-	$('#main-card').css('height',height);
+function updateReactionCssButtons($reactionContainer, userReaction) {
+	if(userReaction == 'like') {
+		$reactionContainer.find('.btn-like').addClass('btn-primary').removeClass('btn-outline-primary');
+		$reactionContainer.find('.btn-dislike').removeClass('btn-danger').addClass('btn-outline-danger');
+	} else if (userReaction == 'dislike') {
+		$reactionContainer.find('.btn-like').removeClass('btn-primary').addClass('btn-outline-primary');
+		$reactionContainer.find('.btn-dislike').addClass('btn-danger').removeClass('btn-outline-danger');
+	} else {
+		$reactionContainer.find('.btn-like').removeClass('btn-primary').addClass('btn-outline-primary');
+		$reactionContainer.find('.btn-dislike').removeClass('btn-danger').addClass('btn-outline-danger');
+	}
 }
-
-$(window).resize(setMainCardHeight);
 
 function onReactionButtonClick($reactionButton) {
 	var postId = $reactionButton.parent().attr('data-postId');
@@ -29,6 +35,8 @@ function onReactionButtonClick($reactionButton) {
 			$reactionContainer = $reactionButton.parent();
 			$reactionContainer.find('.btn-like strong').text(recievedData.likes);
 			$reactionContainer.find('.btn-dislike strong').text(recievedData.dislikes);
+			updateReactionCssButtons($reactionContainer, recievedData.userReaction);
+			console.log(recievedData);
 		},
 		error:function(e) {
 			alert("Can't change post reaction status: " + e.statusText);
@@ -43,11 +51,8 @@ $(function() {
 	$(document).ajaxSend(function(e, xhr, options) {
 		xhr.setRequestHeader(header, token);
 	});
-	
-	setMainCardHeight();
 
 	$(".reaction-container .btn").on('click', function() {
 		onReactionButtonClick($(this));
 	});
-		
 });

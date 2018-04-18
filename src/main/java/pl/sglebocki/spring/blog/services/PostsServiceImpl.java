@@ -30,20 +30,20 @@ class PostsServiceImpl implements PostsService {
 	private ImageDAO imageDAO;
 
 	@Override
-	public Collection<PostShowDTO> getNewestPosts(int numberOfPosts) {
-		return getDTOcollectionFromEntityCollection(postsDAO.getNewestPosts(numberOfPosts));
+	public Collection<PostShowDTO> getNewestPosts(Optional<String> optionalUsername, int numberOfPosts) {
+		return getDTOcollectionFromEntityCollection(optionalUsername, postsDAO.getNewestPosts(numberOfPosts));
 	}
 
 	@Override
-	public PostShowDTO getPostById(long postId) {
+	public PostShowDTO getPostById(Optional<String> optionalUsername, long postId) {
 		PostEntity postEntity = postsDAO.getPostById(postId);
-		return getDTOobjectFromEntityObject(postEntity);
+		return getDTOobjectFromEntityObject(optionalUsername, postEntity);
 	}
 	
 	@Override
-	public PostShowDTO getPostByIdWithAuthentication(String name, Integer postId) {
-		PostEntity postEntity = postsDAO.getPostByIdWithAuthentication(name, postId);
-		return getDTOobjectFromEntityObject(postEntity);
+	public PostShowDTO getPostByIdWithAuthentication(String uesrname, Integer postId) {
+		PostEntity postEntity = postsDAO.getPostByIdWithAuthentication(uesrname, postId);
+		return getDTOobjectFromEntityObject(Optional.of(uesrname), postEntity);
 	}
 
 	@Override
@@ -88,7 +88,7 @@ class PostsServiceImpl implements PostsService {
 	@Override
 	public Collection<PostShowDTO> getPostsByUserName(String userName, DatePeriodDTO datePeriod) {
 		Collection<PostEntity> usersPosts = postsDAO.getPostsByUserName(userName, datePeriod);
-		return getDTOcollectionFromEntityCollection(usersPosts);
+		return getDTOcollectionFromEntityCollection(Optional.of(userName), usersPosts);
 	}
 
 	@Override
@@ -97,7 +97,7 @@ class PostsServiceImpl implements PostsService {
 		postsDAO.delatePostById(username, postId);
 	}
 	
-	private PostShowDTO getDTOobjectFromEntityObject(PostEntity postEntity)  {
+	private PostShowDTO getDTOobjectFromEntityObject(Optional<String> optionalUsername, PostEntity postEntity)  {
 		if (postEntity == null) { 
 			return null;
 		}
@@ -110,11 +110,14 @@ class PostsServiceImpl implements PostsService {
 		retVal.setUsername(postEntity.getAuthor().getUsername());
 		retVal.setUserAvatar(postEntity.getAuthor().getAvatar());
 		retVal.setImage(postEntity.getImageName());
-		retVal.setAdditionalInfo(postsDAO.getPostAdditionalInfo(postEntity.getId()));
+		retVal.setAdditionalInfo(postsDAO.getPostAdditionalInfo(optionalUsername, postEntity.getId()));
 		return retVal;
 	}
 	
-	private Collection<PostShowDTO> getDTOcollectionFromEntityCollection(Collection<PostEntity> postEntityCollection)  {
-		return postEntityCollection.stream().map(this::getDTOobjectFromEntityObject).collect(Collectors.toList());
+	private Collection<PostShowDTO> getDTOcollectionFromEntityCollection(Optional<String> optionalUsername, Collection<PostEntity> postEntityCollection)  {
+		return postEntityCollection
+				.stream()
+				.map(entityObject -> this.getDTOobjectFromEntityObject(optionalUsername, entityObject))
+				.collect(Collectors.toList());
 	}
 }

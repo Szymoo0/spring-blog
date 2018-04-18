@@ -24,7 +24,7 @@ class AjaxPostDAOImpl implements AjaxPostDAO {
 	private EntityManager entityManager;
 	
 	@Override
-	public AjaxPostReactionsResponseDTO getPostReactions(long postId) {
+	public AjaxPostReactionsResponseDTO getPostReactions(String username, long postId) {
 		String queryString = "select " + 
 				"count(CASE WHEN ur.post.id = :postId and ur.reactionType = :like THEN 1 END), " +
 				"count(CASE WHEN ur.post.id = :postId and ur.reactionType = :dislike THEN 1 END) " + 
@@ -34,7 +34,8 @@ class AjaxPostDAOImpl implements AjaxPostDAO {
 		query.setParameter("dislike", PostUserReactionEntity.ReactionType.DISLIKE); 
 		query.setParameter("postId", postId);
 		Object[] queryResponse = (Object[])query.getSingleResult();
-		return new AjaxPostReactionsResponseDTO((Long)queryResponse[0], (Long)queryResponse[1]);
+		Optional<PostUserReactionEntity> userReaction = getUserReactionEntity(username, postId);
+		return new AjaxPostReactionsResponseDTO((Long)queryResponse[0], (Long)queryResponse[1], userReaction.map(e -> e.getReactionType().toString().toLowerCase()).orElse(null));
 	}
 	
 	@Override
@@ -49,7 +50,7 @@ class AjaxPostDAOImpl implements AjaxPostDAO {
 			addNewReaction(username, postId, newReactionType);
 		}
 
-		return getPostReactions(postId);
+		return getPostReactions(username, postId);
 	}
 	
 	private ReactionType getReactionTypeFromDTO(AjaxPostReactionsChangeRequestDTO changeReactionRequest) {

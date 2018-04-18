@@ -1,6 +1,8 @@
 package pl.sglebocki.spring.blog.controllers;
 
+import java.security.Principal;
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,27 +16,34 @@ import pl.sglebocki.spring.blog.services.PostsService;
 @Controller
 public class MainController {
 
-	private static final int NUMBER_OF_POSTS_ON_PAGE = 10; // todo zrobic cos z tym
+	private static final int NUMBER_OF_POSTS_ON_PAGE = 10; // TODO zrobic cos z tym
 	
 	@Autowired 
 	private PostsService postsService;
 	
 	@RequestMapping("/")
-	public String index(Model model) {
-		model.addAttribute("posts", postsService.getNewestPosts(NUMBER_OF_POSTS_ON_PAGE));
+	public String index(Model model, Principal principal) {
+		model.addAttribute("posts", postsService.getNewestPosts(getOptionalUsername(principal), NUMBER_OF_POSTS_ON_PAGE));
 		
 		return "index";
 	}
 	
 	@RequestMapping("/post/{postId}")
-	public String showPost(@PathVariable("postId") Integer postId, Model model) {
-		PostShowDTO post = postsService.getPostById(postId);
+	public String showPost(@PathVariable("postId") Integer postId, Model model, Principal principal) {
+		PostShowDTO post = postsService.getPostById(getOptionalUsername(principal), postId);
 		if(post == null) {
-			return "redirect:/"; // todo dac deafultowy tekscik jakis
+			return "redirect:/"; // TODO dac deafultowy tekscik jakis
 		}
 		model.addAttribute("posts", Arrays.asList(post));
 		
 		return "index";
+	}
+	
+	private Optional<String> getOptionalUsername(Principal principal) {
+		if (principal == null) {
+			return Optional.empty();
+		}
+		return Optional.of(principal.getName());
 	}
 
 }

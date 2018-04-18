@@ -84,18 +84,18 @@
 										<p class="card-text"><c:out value = "${post.content}"/></p>
 										
 										<div class="reaction-container" data-postId="${post.id}">
-											<button class="btn btn-outline-primary btn-like">
+											<button class="btn btn-like ${post.additionalInfo.userReaction == 'like' ? 'btn-primary' : 'btn-outline-primary'}">
 												<img alt="Likes" src="/images/thumb-up.png"> 
 												<strong>${post.additionalInfo.likes}</strong> 
 											</button>
-											<button class="btn btn-outline-danger btn-dislike">
+											<button class="btn btn-dislike ${post.additionalInfo.userReaction == 'dislike' ? 'btn-danger' : 'btn-outline-danger'}">
 												<img alt="Disikes" src="/images/thumb-down.png"> 
 												<strong>${post.additionalInfo.dislikes}</strong>
 											</button>
 										</div>
-										
-										<p class="card-text"><small class="text-muted">Created: <fmt:formatDate type = "both" dateStyle = "short" timeStyle = "short" value = "${post.creationTime}" />
-											<c:if test="${post.lastModificationTime.getTime() ne 0}">
+
+										<p class="card-text float-right"><small class="text-muted">Created: <fmt:formatDate type = "both" dateStyle = "short" timeStyle = "short" value = "${post.creationTime}" />
+											<c:if test="${post.lastModificationTime.getTime() ne post.creationTime.getTime()}">
       											, last modified: <fmt:formatDate type = "both" dateStyle = "short" timeStyle = "short" value = "${post.lastModificationTime}" />
       										</c:if>
       									</small></p>

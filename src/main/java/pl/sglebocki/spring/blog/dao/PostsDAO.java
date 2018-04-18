@@ -1,6 +1,7 @@
 package pl.sglebocki.spring.blog.dao;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import pl.sglebocki.spring.blog.dto.DatePeriodDTO;
 import pl.sglebocki.spring.blog.dto.PostReactionsDTO;
@@ -14,6 +15,6 @@ public interface PostsDAO {
 	public void saveOrUpdatePostContent(String username, PostEntity post);
 	public void delatePostById(String username, long postId);
 	public Collection<PostEntity> getPostsByUserName(String username, DatePeriodDTO datePeriod);
-	public PostReactionsDTO getPostAdditionalInfo(long postId);
+	public PostReactionsDTO getPostAdditionalInfo(Optional<String> username, long postId);
 	
 }

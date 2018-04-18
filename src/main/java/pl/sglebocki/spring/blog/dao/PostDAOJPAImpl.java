@@ -1,6 +1,8 @@
 package pl.sglebocki.spring.blog.dao;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -45,20 +47,16 @@ class PostDAOJPAImpl implements PostsDAO {
 	
 	@Override
 	public void saveOrUpdatePostContent(String username, PostEntity postToMerge) {
-
 		if(postToMerge.getAuthor() == null) {
 			UserEntity author = entityManager.find(UserEntity.class, username);
-			if(author != null) {
-				postToMerge.setAuthor(author);
-			} else {
+			if(author == null) {
 				throw new TransactionRollbackException("User with username " + username + " doesn't exists.");
 			}
+			postToMerge.setAuthor(author);
 		}
-		
 		if(postToMerge.getId() != 0) {
 			checkIfPostBelongToUser(username, postToMerge.getId());
 		}
-
 		entityManager.merge(postToMerge);
 	}
 	
@@ -91,8 +89,7 @@ class PostDAOJPAImpl implements PostsDAO {
 	}
 	
 	@Override
-	public PostReactionsDTO getPostAdditionalInfo(long postId) {
-		PostReactionsDTO returnValue = new PostReactionsDTO();
+	public PostReactionsDTO getPostAdditionalInfo(Optional<String> username, long postId) {
 		String queryString = "select " + 
 							"count(CASE WHEN ur.post.id = :postId and ur.reactionType = :like THEN 1 END), " +
 							"count(CASE WHEN ur.post.id = :postId and ur.reactionType = :dislike THEN 1 END) " + 
@@ -102,9 +99,23 @@ class PostDAOJPAImpl implements PostsDAO {
 		query.setParameter("dislike", PostUserReactionEntity.ReactionType.DISLIKE); 
 		query.setParameter("postId", postId);
 		Object[] queryResponse = (Object[])query.getSingleResult();
+		PostReactionsDTO returnValue = new PostReactionsDTO();
 		returnValue.setLikes((Long)queryResponse[0]);
 		returnValue.setDislikes((Long)queryResponse[1]);
+		username.ifPresent(e -> returnValue.setUserReaction(getUserReactionType(e, postId)));
 		return returnValue;
+	}
+	
+	private String getUserReactionType(String username, long postId) {
+		String dbQuery = "from PostUserReactionEntity react where react.post.id = :postId and react.user.username = :username";
+		TypedQuery<PostUserReactionEntity> query = entityManager.createQuery(dbQuery, PostUserReactionEntity.class);
+		query.setParameter("postId", postId);
+		query.setParameter("username", username);
+		List<PostUserReactionEntity> reactionList = query.getResultList();
+		if(reactionList.size() == 1) {
+			return reactionList.get(0).getReactionType().toString().toLowerCase();
+		}
+		return null;
 	}
 	
 	private void checkIfPostBelongToUser(String username, long postId) {
