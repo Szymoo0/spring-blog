@@ -11,7 +11,7 @@ values
 	('Another one article', 'Sed sagittis ullamcorper massa, ac commodo leo aliquet in. Aliquam vitae dapibus ante, eu semper mauris. Aenean lorem libero, venenatis at aliquet id, gravida et nulla. Ut quis odio dui. Sed vulputate nibh magna, vitae dapibus massa molestie ac. Curabitur id augue eget ligula viverra porta non rhoncus eros. Aliquam in vulputate enim. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vestibulum fringilla enim tellus, in vulputate lacus lacinia nec. Praesent suscipit fringilla arcu, et malesuada urna iaculis pharetra. Aliquam porttitor vulputate sollicitudin. Nullam sodales tortor odio, consectetur bibendum ligula porta eu. Suspendisse efficitur nisi fringilla, vulputate tortor in, venenatis elit.', '2018-04-05 11:50:21', '2018-04-05 11:50:21', 'Szymoo0');
 
 insert into `user_reaction`
-(`username`, `post_id`, `reaction`)
+(`username`, `post_id`, `reaction_type`)
 values
 	('Szymoo0', 1, 1),
 	('user123', 1, 1),

@@ -5,6 +5,7 @@ import pl.sglebocki.spring.blog.dto.ajax.AjaxPostReactionsResponseDTO;
 
 public interface AjaxPostDAO {
 
+	AjaxPostReactionsResponseDTO getPostReactions(long postId);
 	AjaxPostReactionsResponseDTO processPostReactionChangeRequest(String username, AjaxPostReactionsChangeRequestDTO changeReactionRequest);
 
 }

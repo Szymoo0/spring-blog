@@ -159,12 +159,12 @@ public class PostDAOJPAImpl implements PostsDAO {
 	private PostReactionsDTO getPostAdditionalInfo(long postId) {
 		PostReactionsDTO returnValue = new PostReactionsDTO();
 		String queryString = "select " + 
-							"count(CASE WHEN ur.post.id = :postId and ur.reaction = :like THEN 1 END), " +
-							"count(CASE WHEN ur.post.id = :postId and ur.reaction = :dislike THEN 1 END) " + 
+							"count(CASE WHEN ur.post.id = :postId and ur.reactionType = :like THEN 1 END), " +
+							"count(CASE WHEN ur.post.id = :postId and ur.reactionType = :dislike THEN 1 END) " + 
 							"from PostUserReactionEntity ur";
 		Query query = entityManager.createQuery(queryString);
-		query.setParameter("like", PostUserReactionEntity.Reaction.LIKE);
-		query.setParameter("dislike", PostUserReactionEntity.Reaction.DISLIKE); 
+		query.setParameter("like", PostUserReactionEntity.ReactionType.LIKE);
+		query.setParameter("dislike", PostUserReactionEntity.ReactionType.DISLIKE); 
 		query.setParameter("postId", postId);
 		Object[] queryResponse = (Object[])query.getSingleResult();
 		returnValue.setLikes((Long)queryResponse[0]);

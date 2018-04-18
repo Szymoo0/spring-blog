@@ -1,8 +1,12 @@
 package pl.sglebocki.spring.blog.dto.ajax;
 
+import javax.validation.constraints.NotNull;
+
 public class AjaxPostReactionsChangeRequestDTO {
 
+	@NotNull
 	private long postId;
+	@NotNull
 	private String reactionType;
 	
 	public long getPostId() {

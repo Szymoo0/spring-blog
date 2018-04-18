@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @IdClass(CompositeKey.class)
 public class PostUserReactionEntity {
 	
-	public enum Reaction {
+	public enum ReactionType {
 		LIKE, DISLIKE
 	}
 	
@@ -25,8 +25,8 @@ public class PostUserReactionEntity {
 	@ManyToOne
 	@JoinColumn(name="username")
 	private UserEntity user;
-	@Column(name="reaction")
-	private Reaction reaction;
+	@Column(name="reaction_type")
+	private ReactionType reactionType;
 	
 	public PostEntity getPost() {
 		return post;
@@ -40,11 +40,11 @@ public class PostUserReactionEntity {
 	public void setUser(UserEntity user) {
 		this.user = user;
 	}
-	public Reaction getReaction() {
-		return reaction;
+	public ReactionType getReactionType() {
+		return reactionType;
 	}
-	public void setReaction(Reaction reaction) {
-		this.reaction = reaction;
+	public void setReaction(ReactionType reactionType) {
+		this.reactionType = reactionType;
 	}
 	
 }

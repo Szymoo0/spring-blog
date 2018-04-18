@@ -6,11 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.sglebocki.spring.blog.dao.AjaxPostDAO;
+import pl.sglebocki.spring.blog.dao.TransactionRollbackException;
 import pl.sglebocki.spring.blog.dto.ajax.AjaxPostReactionsChangeRequestDTO;
 import pl.sglebocki.spring.blog.dto.ajax.AjaxPostReactionsResponseDTO;
 
 @Service
-@Transactional
+@Transactional(rollbackOn={TransactionRollbackException.class})
 public class AjaxPostServiceImpl implements AjaxPostService {
 
 	@Autowired

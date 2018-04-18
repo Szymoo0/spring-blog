@@ -27,7 +27,7 @@ create table `user_reaction`
 (
 	`username` varchar(128) not null,
 	`post_id` int not null,
-	`reaction` int,
+	`reaction_type` int,
 	constraint FK_UserUserReaction foreign key (`username`) references user(`username`),
 	constraint FK_PostUserReaction foreign key (`post_id`) references post(`id`)
 );

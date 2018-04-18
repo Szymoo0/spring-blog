@@ -2,8 +2,11 @@ package pl.sglebocki.spring.blog.controllers;
 
 import java.security.Principal;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,21 +18,21 @@ import pl.sglebocki.spring.blog.services.AjaxPostService;
 
 @Controller
 @RequestMapping("/posts/ajax")
-public class PostAjaxController {
+public class AjaxPostController {
 
 	@Autowired
 	private AjaxPostService ajaxPostService;
 	
 	@PostMapping(value="change-reaction", produces="application/json")
 	@ResponseBody
-	public AjaxPostReactionsResponseDTO aaa(@RequestBody AjaxPostReactionsChangeRequestDTO changeReactionRequest, Principal principal) {
-		
-		AjaxPostReactionsResponseDTO response = ajaxPostService.processPostReactionChangeRequest(principal.getName(), changeReactionRequest);
-		
-		AjaxPostReactionsResponseDTO responsee = new AjaxPostReactionsResponseDTO();
-		responsee.setLikes(10);
-		responsee.setDislikes(5);
-		return response;
+	public AjaxPostReactionsResponseDTO changeReactionRequest(
+			@RequestBody @Valid AjaxPostReactionsChangeRequestDTO changeReactionRequest, 
+			BindingResult bindingResult,
+			Principal principal) {
+		if(bindingResult.hasErrors()) {
+			return null; // TODO return error code here
+		}
+		return ajaxPostService.processPostReactionChangeRequest(principal.getName(), changeReactionRequest);
 	}
 	
 }
