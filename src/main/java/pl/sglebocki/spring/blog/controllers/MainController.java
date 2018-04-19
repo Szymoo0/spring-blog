@@ -16,14 +16,15 @@ import pl.sglebocki.spring.blog.services.PostsService;
 @Controller
 public class MainController {
 
-	private static final int NUMBER_OF_POSTS_ON_PAGE = 10; // TODO zrobic cos z tym
+	private static final int NUMBER_OF_POSTS_ON_PAGE = 5; // TODO zrobic cos z tym
+	private static final long NEWEST_POST_ID = -1;
 	
 	@Autowired 
 	private PostsService postsService;
 	
 	@RequestMapping("/")
 	public String index(Model model, Principal principal) {
-		model.addAttribute("posts", postsService.getNewestPosts(getOptionalUsername(principal), NUMBER_OF_POSTS_ON_PAGE));
+		model.addAttribute("posts", postsService.getPostsLowerThanId(getOptionalUsername(principal), NEWEST_POST_ID, NUMBER_OF_POSTS_ON_PAGE));
 		
 		return "index";
 	}

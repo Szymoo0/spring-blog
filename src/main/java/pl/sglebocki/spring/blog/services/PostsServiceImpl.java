@@ -30,8 +30,9 @@ class PostsServiceImpl implements PostsService {
 	private ImageDAO imageDAO;
 
 	@Override
-	public Collection<PostShowDTO> getNewestPosts(Optional<String> optionalUsername, int numberOfPosts) {
-		return getDTOcollectionFromEntityCollection(optionalUsername, postsDAO.getNewestPosts(numberOfPosts));
+	public Collection<PostShowDTO> getPostsLowerThanId(Optional<String> optionalUsername, long fromId, int numberOfPosts) {
+		Collection<PostEntity> postEntityCollection = postsDAO.getPostsLowerThanId(fromId, numberOfPosts);
+		return getDTOcollectionFromEntityCollection(optionalUsername, postEntityCollection);
 	}
 
 	@Override

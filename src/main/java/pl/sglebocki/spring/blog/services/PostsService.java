@@ -9,7 +9,7 @@ import pl.sglebocki.spring.blog.dto.PostSaveDTO;
 
 public interface PostsService {
 
-	public Collection<PostShowDTO> getNewestPosts(Optional<String> optionalUsername, int number);
+	public Collection<PostShowDTO> getPostsLowerThanId(Optional<String> optionalUsername, long fromId, int number);
 	public PostShowDTO getPostById(Optional<String> optionalUsername, long postId);
 	public PostShowDTO getPostByIdWithAuthentication(String name, Integer postId);
 	public void saveOrUpdatePost(String userName,PostSaveDTO post);

@@ -9,7 +9,7 @@ import pl.sglebocki.spring.blog.entities.PostEntity;
 
 public interface PostsDAO {
 
-	public Collection<PostEntity> getNewestPosts(int number);
+	public Collection<PostEntity> getPostsLowerThanId(long fromPostId, int number);
 	public PostEntity getPostById(long postId);
 	public PostEntity getPostByIdWithAuthentication(String username, long postId);
 	public void saveOrUpdatePostContent(String username, PostEntity post);

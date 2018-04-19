@@ -1,3 +1,5 @@
+/* REACTION BUTTONS */
+
 function updateReactionCssButtons($reactionContainer, userReaction) {
 	if(userReaction == 'like') {
 		$reactionContainer.find('.btn-like').addClass('btn-primary').removeClass('btn-outline-primary');
@@ -44,6 +46,50 @@ function onReactionButtonClick($reactionButton) {
 	});
 }
 
+/* DYNAMIC PAGE LOAD PAGE */
+
+function getOlderPosts(fromPost) {
+	$.ajax({
+		type:"GET",
+		url:"http://localhost:8080/posts/ajax/load-more-posts/" + fromPost,
+		dataType:"text",
+		timeout:10000,
+		success:function(recievedData) {
+			/*console.log(recievedData);*/
+			console.log(typeof recievedData.additionalInfo);
+			
+			$recievedData = $($.parseHTML(recievedData));
+			
+			$recievedData.find(".reaction-container .btn").on('click', function() {
+				onReactionButtonClick($(this));
+			});
+			
+			$('#article-container').append($recievedData);
+			
+
+			
+		},
+		error:function(e) {
+			alert("Can't change post reaction status: " + e.statusText);
+		}
+	});
+}
+
+
+$(window).scroll(function() {
+	if($(window).scrollTop() + $(window).height() == $(document).height()) {
+		
+		let postsId = $('[data-postId]').map(function() {return $(this).attr('data-postId')}).get();
+		console.log(postsId);
+		let minIndex = Math.min.apply(null, postsId);
+		console.log(minIndex);
+		
+		getOlderPosts(minIndex);
+	}
+});
+
+/* =============================== */
+
 $(function() {
 	/* set AJAX CSRF */
 	var token = $("meta[name='_csrf']").attr("content");
@@ -55,4 +101,5 @@ $(function() {
 	$(".reaction-container .btn").on('click', function() {
 		onReactionButtonClick($(this));
 	});
+
 });

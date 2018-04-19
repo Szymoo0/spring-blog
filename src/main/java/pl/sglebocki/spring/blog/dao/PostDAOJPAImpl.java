@@ -28,10 +28,30 @@ class PostDAOJPAImpl implements PostsDAO {
 	private ImageDAOImpl imageSaver;
 	
 	@Override
-	public Collection<PostEntity> getNewestPosts(int number) {
-		String queryString = "from PostEntity posts order by posts.id desc";
-		TypedQuery<PostEntity> newestPostQuery = entityManager.createQuery(queryString, PostEntity.class).setMaxResults(number);
+	public Collection<PostEntity> getPostsLowerThanId(long fromPostId, int number) {
+		TypedQuery<PostEntity> newestPostQuery;
+		if(chekIfShouldGenerateNewestPosts(fromPostId)) {
+			newestPostQuery = getNewestPostsQuery(number);
+		} else {
+			newestPostQuery = getPostsFromIdQuery(fromPostId, number);
+		}
 		return newestPostQuery.getResultList();
+	}
+	
+	private boolean chekIfShouldGenerateNewestPosts(long fromPostId) {
+		return fromPostId <= 0;
+	}
+	
+	private TypedQuery<PostEntity> getNewestPostsQuery(int number) {
+		String queryString = "from PostEntity posts order by posts.id desc";
+		return entityManager.createQuery(queryString, PostEntity.class).setMaxResults(number);
+	}
+	
+	private TypedQuery<PostEntity> getPostsFromIdQuery(long fromPostId, int number) {
+		String queryString = "from PostEntity posts where :fromPostId > posts.id order by posts.id desc";
+		TypedQuery<PostEntity> newestPostQuery = entityManager.createQuery(queryString, PostEntity.class).setMaxResults(number);
+		newestPostQuery.setParameter("fromPostId", fromPostId);
+		return newestPostQuery;
 	}
 
 	@Override

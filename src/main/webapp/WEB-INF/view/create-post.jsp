@@ -19,33 +19,7 @@
 </head>
 <body>
 
-	<nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
-		<a class="navbar-brand" href="${pageContext.request.contextPath}/">
-			<img src="/images/logo.png" width="auto" height="50" alt="">
-		</a>
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-			<div class="navbar-nav mr-auto">
-				<a class="nav-item nav-link active" href="${pageContext.request.contextPath}/">Home <span class="sr-only">(current)</span></a>
-				<a class="nav-item nav-link" href="${pageContext.request.contextPath}/posts/create">Create</a>
-				<a class="nav-item nav-link" href="${pageContext.request.contextPath}/posts/my-posts">My posts</a>
-			</div>
-			<div class="navbar-nav ml-auto">
-				<sec:authorize access="isAnonymous()">
-					<a class="nav-item nav-link btn btn-outline-success text-success" href="${pageContext.request.contextPath}/authentication/login">Login</a>
-					&nbsp
-					<a class="nav-item nav-link btn btn-outline-warning text-warning" href="${pageContext.request.contextPath}/authentication/register">Register</a>
-				</sec:authorize>
-				<sec:authorize access="isAuthenticated()">
-					<sec:authentication var="principal" property="principal" />
-				    <span class="text-white my-auto">Hello <c:out value="${principal}"></c:out>&nbsp&nbsp&nbsp</span>
-					<a class="nav-item nav-link btn btn-outline-warning text-warning" href="<c:url value="/authentication/logout" />">Logout</a>
-				</sec:authorize>
-			</div>
-		</div>
-	</nav>
+	<jsp:include page="jsp-includes/navigation-bar.jsp" />
 
 	<br><br><br><br><br>
 	
@@ -99,17 +73,11 @@
     			</div>
     		</div>
 
-			<div class="col">
-				<div class="card bg-dark">
+			<aside class="col">
+			
+				<jsp:include page="jsp-includes/aside-card.jsp" />
 				
-					<aside class="card-body text-white">
-						<h2><img src="/images/beast.png" width="50" height="50" alt=""> The beast</h2>
-						<p><span class="badge badge-warning">Hot</span> <a href="#" class="alert-link text-white">Some sample article</a></p>
-						<p><span class="badge badge-warning">Hot</span> <a href="#" class="alert-link text-white">Another one article</a></p>
-					</aside>
-					
-				</div>
-			</div>
+			</aside>
 
 		</div>
 	</main>
