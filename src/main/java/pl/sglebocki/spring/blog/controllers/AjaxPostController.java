@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,7 +34,8 @@ public class AjaxPostController {
 	@Autowired 
 	private PostsService postsService;
 	
-	private static final int ADDITIONAL_LOAD = 3; // TODO zrobic cos z tym
+	@Value("${behave.posts.initial_posts_number}")
+	private int additionalLoadPostNumber;
 	
 	@PostMapping(value="change-reaction", produces="application/json")
 	@ResponseBody
@@ -41,9 +43,8 @@ public class AjaxPostController {
 			@RequestBody @Valid AjaxPostReactionsChangeRequestDTO changeReactionRequest, 
 			BindingResult bindingResult,
 			Principal principal) {
-		if(bindingResult.hasErrors()) {
-			return null; // TODO return error code here
-		}
+		if(principal == null)  throw new UnauthorizedException();
+		if(bindingResult.hasErrors()) throw new BadRequestException(); 
 		return ajaxPostService.processPostReactionChangeRequest(principal.getName(), changeReactionRequest);
 	}
 	
@@ -53,15 +54,8 @@ public class AjaxPostController {
 			Model model,
 			Principal principal) {
 
-		
-		Collection<PostShowDTO> postsToShow = postsService.getPostsLowerThanId(getOptionalUsername(principal), fromPostId, ADDITIONAL_LOAD);
-		
-		System.out.println(postsToShow.size());
-		
+		Collection<PostShowDTO> postsToShow = postsService.getPostsLowerThanId(getOptionalUsername(principal), fromPostId, additionalLoadPostNumber);
 		model.addAttribute("posts", postsToShow);
-		
-		System.out.println(fromPostId);
-		
 		return "jsp-includes/posts";
 	}
 	

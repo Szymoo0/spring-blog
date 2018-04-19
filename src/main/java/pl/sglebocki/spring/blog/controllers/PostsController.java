@@ -22,12 +22,13 @@ import pl.sglebocki.spring.blog.dto.PostSaveDTO;
 import pl.sglebocki.spring.blog.services.PostsService;
 
 @Controller
+@RequestMapping("/posts")
 public class PostsController {
 
 	@Autowired 
 	private PostsService postsService;
 	
-	@RequestMapping("/posts/create")
+	@RequestMapping("/create")
 	public String createPost(Model model) {
 		PostSaveDTO createdPost = new PostSaveDTO();
 		model.addAttribute("createdPost", createdPost);
@@ -35,7 +36,7 @@ public class PostsController {
 		return "create-post";
 	}
 	
-	@RequestMapping("/posts/save")
+	@RequestMapping("/save")
 	public String savePost(
 			@Valid @ModelAttribute("createdPost") PostSaveDTO postToSave, 
 			BindingResult bindingResult, 
@@ -48,7 +49,7 @@ public class PostsController {
 	}
 	
 	@SuppressWarnings("deprecation")
-	@RequestMapping("/posts/my-posts")
+	@RequestMapping("/my-posts")
 	public String myPosts(Model model, 
 						@RequestParam(value="fromDate", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fromDate,
 						@RequestParam(value="toDate", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date toDate,
@@ -70,14 +71,14 @@ public class PostsController {
 		return "/my-posts";
 	}
 	
-	@PostMapping("/posts/delete")
+	@PostMapping("/delete")
 	public String deletePost(@RequestParam("postId") Integer postId, Principal principal) {
 		postsService.delatePostById(principal.getName(), postId);
 		
 		return "redirect:/posts/my-posts";
 	}
 	
-	@RequestMapping("/posts/edit/{postId}")
+	@RequestMapping("/edit/{postId}")
 	public String myPostsEdit(@PathVariable("postId") Integer postId, Model model, Principal principal) {
 		PostShowDTO post = postsService.getPostByIdWithAuthentication(principal.getName(), postId);
         if (post == null) {

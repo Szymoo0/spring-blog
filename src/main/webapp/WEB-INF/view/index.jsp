@@ -14,8 +14,19 @@
 	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
 
     <link rel="stylesheet" href="/css/main.css"/>
-    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript" src="/js/feature_ajaxCSRFenable.js"></script>
+    <script type="text/javascript" src="/js/feature_dynamicContentLoas.js"></script>
+    <script type="text/javascript" src="/js/feature_reactionButton.js"></script>
     
+    <c:choose>
+    	<c:when test="${singlePostMainPage}">
+    		<script type="text/javascript" src="/js/onload_singlePostPage.js"></script>
+    	</c:when>
+    	<c:otherwise>
+    		<script type="text/javascript" src="/js/onload_mainPage.js"></script>
+    	</c:otherwise>
+    </c:choose>
+
     <meta name="_csrf" content="${_csrf.token}"/>
 	<meta name="_csrf_header" content="${_csrf.headerName}"/>
 </head>

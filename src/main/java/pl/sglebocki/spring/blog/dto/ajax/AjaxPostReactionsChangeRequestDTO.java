@@ -21,5 +21,11 @@ public class AjaxPostReactionsChangeRequestDTO {
 	public void setReactionType(String reactionType) {
 		this.reactionType = reactionType;
 	}
+	@Override
+	public String toString() {
+		return "AjaxPostReactionsChangeRequestDTO [postId=" + postId + ", reactionType=" + reactionType + "]";
+	}
+	
+	
 	
 }

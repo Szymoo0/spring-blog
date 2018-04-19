@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +17,9 @@ import pl.sglebocki.spring.blog.services.PostsService;
 @Controller
 public class MainController {
 
-	private static final int NUMBER_OF_POSTS_ON_PAGE = 5; // TODO zrobic cos z tym
+	@Value("${behave.posts.initial_posts_number}")
+	private int initialPostNumberOnPage;
+	
 	private static final long NEWEST_POST_ID = -1;
 	
 	@Autowired 
@@ -24,7 +27,7 @@ public class MainController {
 	
 	@RequestMapping("/")
 	public String index(Model model, Principal principal) {
-		model.addAttribute("posts", postsService.getPostsLowerThanId(getOptionalUsername(principal), NEWEST_POST_ID, NUMBER_OF_POSTS_ON_PAGE));
+		model.addAttribute("posts", postsService.getPostsLowerThanId(getOptionalUsername(principal), NEWEST_POST_ID, initialPostNumberOnPage));
 		
 		return "index";
 	}
@@ -36,6 +39,7 @@ public class MainController {
 			return "redirect:/"; // TODO dac deafultowy tekscik jakis
 		}
 		model.addAttribute("posts", Arrays.asList(post));
+		model.addAttribute("singlePostMainPage", true);
 		
 		return "index";
 	}
