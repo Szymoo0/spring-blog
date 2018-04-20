@@ -20,7 +20,11 @@ public class MainController {
 	@Value("${behave.posts.initial_posts_number}")
 	private int initialPostNumberOnPage;
 	
-	private static final long NEWEST_POST_ID = -1;
+	@Value("${behave.posts.the_best_number}")
+	private int theBestPostOnPage;
+	
+	private static final int NEWEST_POST_ID = -1;
+	private static final int THE_BEAT_POSTS = -1;
 	
 	@Autowired 
 	private PostsService postsService;
@@ -28,7 +32,8 @@ public class MainController {
 	@RequestMapping("/")
 	public String index(Model model, Principal principal) {
 		model.addAttribute("posts", postsService.getPostsLowerThanId(getOptionalUsername(principal), NEWEST_POST_ID, initialPostNumberOnPage));
-		
+		model.addAttribute("theBestPosts", postsService.getTheBestPosts(THE_BEAT_POSTS, theBestPostOnPage));
+
 		return "index";
 	}
 	
@@ -39,6 +44,7 @@ public class MainController {
 			return "redirect:/"; // TODO dac deafultowy tekscik jakis
 		}
 		model.addAttribute("posts", Arrays.asList(post));
+		model.addAttribute("theBestPosts", postsService.getTheBestPosts(THE_BEAT_POSTS, theBestPostOnPage));
 		model.addAttribute("singlePostMainPage", true);
 		
 		return "index";

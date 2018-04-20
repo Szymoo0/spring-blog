@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,10 +29,16 @@ public class PostsController {
 	@Autowired 
 	private PostsService postsService;
 	
+	@Value("${behave.posts.the_best_number}")
+	private int theBestPostOnPage;
+	
+	private static final int THE_BEAT_POSTS = -1;
+	
 	@RequestMapping("/create")
 	public String createPost(Model model) {
 		PostSaveDTO createdPost = new PostSaveDTO();
 		model.addAttribute("createdPost", createdPost);
+		model.addAttribute("theBestPosts", postsService.getTheBestPosts(THE_BEAT_POSTS, theBestPostOnPage));
 		
 		return "create-post";
 	}
@@ -67,6 +74,7 @@ public class PostsController {
 
 		model.addAttribute("datePeriod", datePeriod);
 		model.addAttribute("posts", postsService.getPostsByUserName(principal.getName(), datePeriod));
+		model.addAttribute("theBestPosts", postsService.getTheBestPosts(THE_BEAT_POSTS, theBestPostOnPage));
 		
 		return "/my-posts";
 	}
@@ -86,6 +94,7 @@ public class PostsController {
         }
 		model.addAttribute("createdPost", post);
 		model.addAttribute("modification", true);
+		model.addAttribute("theBestPosts", postsService.getTheBestPosts(THE_BEAT_POSTS, theBestPostOnPage));
 		
 		return "/create-post";
 	}

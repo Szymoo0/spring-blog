@@ -30,9 +30,21 @@ class PostsServiceImpl implements PostsService {
 	private ImageDAO imageDAO;
 
 	@Override
-	public Collection<PostShowDTO> getPostsLowerThanId(Optional<String> optionalUsername, long fromId, int numberOfPosts) {
-		Collection<PostEntity> postEntityCollection = postsDAO.getPostsLowerThanId(fromId, numberOfPosts);
+	public Collection<PostShowDTO> getPostsLowerThanId(Optional<String> optionalUsername, int fromId, int numberOfPosts) {
+		Collection<PostEntity> postEntityCollection = postsDAO.getPostsByStrategy(
+				fromId, 
+				numberOfPosts, 
+				PostsDAO.PostPickerStrategy.ID_DESCENDING);
 		return getDTOcollectionFromEntityCollection(optionalUsername, postEntityCollection);
+	}
+	
+	@Override
+	public Collection<PostShowDTO> getTheBestPosts(int fromPosition, int numberOfPosts) {
+		Collection<PostEntity> postEntityCollection = postsDAO.getPostsByStrategy(
+				fromPosition, 
+				numberOfPosts, 
+				PostsDAO.PostPickerStrategy.FROM_THE_BEST_TO_WORST);
+		return getDTOcollectionFromEntityCollection(Optional.empty(), postEntityCollection);
 	}
 
 	@Override

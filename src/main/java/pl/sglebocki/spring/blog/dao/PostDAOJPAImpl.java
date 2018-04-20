@@ -1,9 +1,14 @@
 package pl.sglebocki.spring.blog.dao;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -27,31 +32,20 @@ class PostDAOJPAImpl implements PostsDAO {
 	@Autowired
 	private ImageDAOImpl imageSaver;
 	
+	private Map<PostsDAO.PostPickerStrategy, BiFunction<Integer, Integer, TypedQuery<PostEntity>>> strategyMap;
+	
+	@PostConstruct
+	void postConstruct() {
+		IdentityHashMap<PostsDAO.PostPickerStrategy, BiFunction<Integer, Integer, TypedQuery<PostEntity>>> unmodifiableMap = new IdentityHashMap<>();
+		unmodifiableMap.put(PostsDAO.PostPickerStrategy.ID_DESCENDING, new IdDescendingStrategy(entityManager));
+		unmodifiableMap.put(PostsDAO.PostPickerStrategy.FROM_THE_BEST_TO_WORST, new FromTheBestToWorstStrategy(entityManager));
+		strategyMap = Collections.unmodifiableMap(unmodifiableMap);
+	}
+
 	@Override
-	public Collection<PostEntity> getPostsLowerThanId(long fromPostId, int number) {
-		TypedQuery<PostEntity> newestPostQuery;
-		if(chekIfShouldGenerateNewestPosts(fromPostId)) {
-			newestPostQuery = getNewestPostsQuery(number);
-		} else {
-			newestPostQuery = getPostsFromIdQuery(fromPostId, number);
-		}
-		return newestPostQuery.getResultList();
-	}
-	
-	private boolean chekIfShouldGenerateNewestPosts(long fromPostId) {
-		return fromPostId <= 0;
-	}
-	
-	private TypedQuery<PostEntity> getNewestPostsQuery(int number) {
-		String queryString = "from PostEntity posts order by posts.id desc";
-		return entityManager.createQuery(queryString, PostEntity.class).setMaxResults(number);
-	}
-	
-	private TypedQuery<PostEntity> getPostsFromIdQuery(long fromPostId, int number) {
-		String queryString = "from PostEntity posts where :fromPostId > posts.id order by posts.id desc";
-		TypedQuery<PostEntity> newestPostQuery = entityManager.createQuery(queryString, PostEntity.class).setMaxResults(number);
-		newestPostQuery.setParameter("fromPostId", fromPostId);
-		return newestPostQuery;
+	public Collection<PostEntity> getPostsByStrategy(int fromPost, int number, PostPickerStrategy strategy) {
+		TypedQuery<PostEntity> query = strategyMap.get(strategy).apply(fromPost, number);
+		return query.getResultList();
 	}
 
 	@Override
