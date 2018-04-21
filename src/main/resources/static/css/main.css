@@ -7,7 +7,7 @@ body {
 	background: linear-gradient(rgb(74,109,137), rgb(74,109,137), rgb(55,90,118), rgb(55,90,118), rgb(55,90,118));
 }
 
-article {
+article, top-margin-1em {
 	margin-top: 1em;
 }
 
@@ -35,4 +35,16 @@ article {
 
 .reaction-container {
 	display: inline;
+}
+
+.imageMaxSize100percent {
+	height: auto; 
+    width: auto;
+    max-width:100%;
+    max-height:100%;
+}
+
+#imagePreviewContainer {
+	margin-top: 1em;
+	display: none;
 }

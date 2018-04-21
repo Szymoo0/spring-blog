@@ -20,7 +20,9 @@
 		<div class="col-10">
 			<div class="card bg-light">
 				<c:if test="${post.image != null}">
-					<img class="card-img-top" src="<c:out value="/dynamicimages/${post.image}"></c:out>" alt="Card image cap" />
+					<div class="text-center">
+						<img class="card-img-top imageMaxSize100percent" src="<c:out value="/dynamicimages/${post.image}"></c:out>" alt="Card image cap" />
+					</div>
 				</c:if>
 				<div class="card-body">
 					<div>
