@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import pl.sglebocki.spring.blog.dto.DatePeriodDTO;
-import pl.sglebocki.spring.blog.dto.PostShowDTO;
 import pl.sglebocki.spring.blog.dto.PostSaveDTO;
 import pl.sglebocki.spring.blog.services.PostsService;
 
@@ -88,7 +87,7 @@ public class PostsController {
 	
 	@RequestMapping("/edit/{postId}")
 	public String myPostsEdit(@PathVariable("postId") Integer postId, Model model, Principal principal) {
-		PostShowDTO post = postsService.getPostByIdWithAuthentication(principal.getName(), postId);
+		PostSaveDTO post = postsService.getPostByIdToModify(principal.getName(), postId);
         if (post == null) {
             return "redirect:/";
         }

@@ -65,6 +65,8 @@
   											<button id="clearBtn" class="btn btn-primary" >Remove image</button>
   										</div>
   									</div>
+  									<form:hidden path="presentImageUrl" id="presentImage"/>
+  									<form:hidden path="deletePresentImageIfExists" id="deletePresentImage"/>
 								</div>
 		      					<div class="form-group">
 		      						<input type="submit" value="Post" class="btn btn-warning"/>

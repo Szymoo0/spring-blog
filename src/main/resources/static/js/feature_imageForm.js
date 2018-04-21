@@ -13,12 +13,21 @@ $(function() {
 		_showImage(this);
 	    $('#imagePreviewContainer').css('display', 'block');
 	    $('#inputFileLabel').text('Change selected image');
+	    $("#deletePresentImage").attr('value', true);
 	});
 
 	$("#clearBtn").click(function(){
 		$('#inputFile').val("");
 		$('#imagePreviewContainer').css('display', 'none');
 		$('#inputFileLabel').text('Choose image');
+		$("#deletePresentImage").attr('value', true);
 		return false;
 	});
+	
+	let presentImage = $("#presentImage").attr('value');
+	if(presentImage) {
+		$('#imagePreview').attr('src','/dynamicimages/' + presentImage);
+		$('#imagePreviewContainer').css('display', 'block');
+	    $('#inputFileLabel').text('Change selected image');
+	}
 })

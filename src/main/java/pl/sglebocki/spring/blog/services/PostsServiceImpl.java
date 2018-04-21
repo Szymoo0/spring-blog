@@ -52,11 +52,16 @@ class PostsServiceImpl implements PostsService {
 		PostEntity postEntity = postsDAO.getPostById(postId);
 		return getDTOobjectFromEntityObject(optionalUsername, postEntity);
 	}
-	
+
 	@Override
-	public PostShowDTO getPostByIdWithAuthentication(String uesrname, Integer postId) {
+	public PostSaveDTO getPostByIdToModify(String uesrname, Integer postId) {
 		PostEntity postEntity = postsDAO.getPostByIdWithAuthentication(uesrname, postId);
-		return getDTOobjectFromEntityObject(Optional.of(uesrname), postEntity);
+		PostSaveDTO post = new PostSaveDTO();
+		post.setId(postEntity.getId());
+		post.setTitle(postEntity.getTitle());
+		post.setContent(postEntity.getContent());
+		post.setPresentImageUrl(postEntity.getImageName());			
+		return post;
 	}
 
 	@Override
@@ -64,9 +69,9 @@ class PostsServiceImpl implements PostsService {
 	public void saveOrUpdatePost(String username, PostSaveDTO post) {
 		PostEntity postEntity;
 		if(checkIfPostExists(post)) {
-			postEntity = createNewEntity(username, post);
-		} else {
 			postEntity = updateExistingEntity(username, post);
+		} else {
+			postEntity = createNewEntity(username, post);
 		}
 		postsDAO.saveOrUpdatePostContent(username, postEntity);
 	}
@@ -75,18 +80,26 @@ class PostsServiceImpl implements PostsService {
 		return post.getId() != 0;
 	}
 	
-	private PostEntity createNewEntity(String username, PostSaveDTO post) {
+	private PostEntity updateExistingEntity(String username, PostSaveDTO post) {
 		PostEntity postEntity = postsDAO.getPostById(post.getId());
 		Optional<String> imageLink = imageDAO.saveImageAndGetImageLink(username, post.getImage());
-		imageDAO.registerImageLinkToDelete(postEntity.getImageName());
 		postEntity.setTitle(post.getTitle());
 		postEntity.setContent(post.getContent());
 		postEntity.setLastModificationTime(new Date());
-		postEntity.setImageName(imageLink.orElse(null)); // TODO set default image
+		registerPresentImageToDeleteIfNessesery(postEntity, post, imageLink);
+		postEntity.setImageName(imageLink.orElse(post.getPresentImageUrl())); // TODO set default image
 		return postEntity;
 	}
 	
-	private PostEntity updateExistingEntity(String username, PostSaveDTO post) {
+	private void registerPresentImageToDeleteIfNessesery(PostEntity postEntity, PostSaveDTO post, Optional<String> imageLink) {
+		if(post.isDeletePresentImageIfExists()) {
+			imageDAO.registerImageLinkToDelete(postEntity.getImageName());
+			post.setPresentImageUrl(null);
+		}
+		imageLink.ifPresent(e -> imageDAO.registerImageLinkToDelete(postEntity.getImageName()) );
+	}
+	
+	private PostEntity createNewEntity(String username, PostSaveDTO post) {
 		PostEntity postEntity = new PostEntity();
 		Date creationDate = new Date();	
 		Optional<String> imageLink = imageDAO.saveImageAndGetImageLink(username, post.getImage());
@@ -133,4 +146,5 @@ class PostsServiceImpl implements PostsService {
 				.map(entityObject -> this.getDTOobjectFromEntityObject(optionalUsername, entityObject))
 				.collect(Collectors.toList());
 	}
+
 }
