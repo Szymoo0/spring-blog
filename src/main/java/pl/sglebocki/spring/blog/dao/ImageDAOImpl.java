@@ -8,7 +8,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -19,8 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 class ImageDAOImpl implements ImageDAO {
 
-	@Value("${resources.images}")
-	private String imagePath;
+	@Autowired
+	@Qualifier("imagePath")
+	private Path imagePath;
 	private LinkedList<Path> savedImages = new LinkedList<>();
 	private LinkedList<Path> imagesToDelate = new LinkedList<>();
 
@@ -28,16 +30,19 @@ class ImageDAOImpl implements ImageDAO {
 	}
 	
 	public ImageDAOImpl(String imagePath) {
-		this.imagePath = imagePath;
+		this.imagePath = Paths.get(imagePath);
 	}
 	
 	@Override
 	public Optional<String> saveImageAndGetImageLink(String userName, MultipartFile image) {
 		if(image != null && !image.isEmpty() && image.getContentType().startsWith("image")) {
+			
+			// TODO transaction rollback exception if !image.getContentType().startsWith("image")
+			
 			Date date = new Date();
 			String imageLink = userName + date.getTime() + image.getOriginalFilename();
 			try {
-				Path imageSavePath = Paths.get(imagePath, imageLink);
+				Path imageSavePath = imagePath.resolve(imageLink);
 				savedImages.add(imageSavePath);
 				image.transferTo(imageSavePath.toFile());
 			} catch (IOException e) {

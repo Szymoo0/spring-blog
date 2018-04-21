@@ -1,4 +1,7 @@
 function _showImage($formFileInput) {
+	
+	// TODO error if not "image" type
+	
     if ($formFileInput.files && $formFileInput.files[0]) {
         var reader = new FileReader();
         reader.onload = function (e) {
