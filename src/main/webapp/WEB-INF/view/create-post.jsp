@@ -15,7 +15,7 @@
 	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
 
     <link rel="stylesheet" href="/css/main.css"/>
-    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript" src="/js/feature_imageForm.js"></script>
 </head>
 <body>
 
@@ -52,13 +52,11 @@
 		      						<form:textarea path="content" class="form-control" rows="8"/>
 		      					</div>
 		      					<div class="form-group">
-
 		      						<label for="inputFile" class="text-white">Add image</label>
 				      				<div class="custom-file" >
     									<form:input type="file" path="image" class="custom-file-input" id="inputFile" />
     									<label class="custom-file-label" for="inputFile" id="inputFileLabel">Choose image</label>
   									</div>
- 
   									<div class="card bg-dark" id="imagePreviewContainer">
   										<div class="text-center">
   											<img class="card-img imageMaxSize100percent" id="imagePreview" src="#" alt="Oppps - cant load Yours image" />
@@ -67,38 +65,6 @@
   											<button id="clearBtn" class="btn btn-primary" >Remove image</button>
   										</div>
   									</div>
-  									
-							
-  									
-  									<script type="text/javascript">
-  									
-	  									function readURL(input) {
-	  									    if (input.files && input.files[0]) {
-	  									        var reader = new FileReader();
-	
-	  									        reader.onload = function (e) {
-	  									            $('#imagePreview').attr('src', e.target.result);
-	  									        }
-	
-	  									        reader.readAsDataURL(input.files[0]);
-	  									    }
-	  									}
-	  									
-	  									$("#inputFile").change(function(){
-	  									    readURL(this);
-	  									    $('#imagePreviewContainer').css('display', 'block');
-	  									    $('#inputFileLabel').text('Change selected image');
-	  									});
-	  									
-	  									$("#clearBtn").click(function(){
-	  										$('#imagePreviewContainer').css('display', 'none');
-	  										$('#inputFile').val("");
-	  										$('#inputFileLabel').text('Choose image');
-	  										return false;
-	  									});
-  									
-  									</script>
-
 								</div>
 		      					<div class="form-group">
 		      						<input type="submit" value="Post" class="btn btn-warning"/>

@@ -16,7 +16,7 @@
 	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
 
     <link rel="stylesheet" href="/css/main.css"/>
-    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript" src="/js/feature_imageForm.js"></script>
 </head>
 <body>
 
@@ -65,8 +65,16 @@
 				      		<label for="inputFile" class="text-white">Avatar image</label>
 				      		<div class="custom-file">
     							<form:input type="file" path="avatar" class="custom-file-input" id="inputFile" />
-    							<label class="custom-file-label" for="inputFile">Choose file</label>
+    							<label class="custom-file-label" for="inputFile">Choose image</label>
   							</div>
+  						    <div class="card bg-dark" id="imagePreviewContainer">
+  						    	<div class="text-center">
+  						    		<img class="card-img imageMaxSize100percent" id="imagePreview" src="#" alt="Oppps - cant load Yours image" />
+  						    	</div>
+  						    	<div class="card-img-overlay">
+  						    		<button id="clearBtn" class="btn btn-primary" >Remove image</button>
+  						    	</div>
+  						    </div>
 						</div>
 				      	<div class="form-group">
 				      		<input type="submit" value="Register" class="btn btn-warning"/>

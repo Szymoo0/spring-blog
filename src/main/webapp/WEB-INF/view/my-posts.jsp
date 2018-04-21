@@ -16,7 +16,6 @@
 	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
 
     <link rel="stylesheet" href="/css/main.css"/>
-    <script type="text/javascript" src="/js/main.js"></script>
 </head>
 <body>
 
