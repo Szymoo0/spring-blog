@@ -31,7 +31,7 @@ function _onReactionButtonClick($reactionButton) {
 	$.ajax({
 		type:"POST",
 		contentType:"application/json",
-		url:"http://localhost:8080/posts/ajax/change-reaction",
+		url:"http://localhost:8080/ajax/posts/change-reaction",
 		data:JSON.stringify(dataToSend),
 		dataType:"json",
 		timeout:10000,

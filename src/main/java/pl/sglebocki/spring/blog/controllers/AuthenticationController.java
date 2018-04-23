@@ -20,35 +20,26 @@ import pl.sglebocki.spring.blog.dto.UserSaveDTO;
 import pl.sglebocki.spring.blog.services.UserManagmentService;
 
 @Controller
+@RequestMapping("/authentication")
 public class AuthenticationController {
 
 	@Autowired
 	UserManagmentService userValidatorService;
 	
-	@GetMapping("/authentication/register")
+	@GetMapping("register")
 	public String registerForm(Model model) {
 		model.addAttribute("newUser", new UserSaveDTO());
 
 		return "registration-form";
 	}
 	
-	@PostMapping("/authentication/save")
+	@PostMapping("save")
 	public String registerProcessForm(@Valid @ModelAttribute("newUser") UserSaveDTO newUser, BindingResult bindedResult, Model model) {
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		if(bindedResult.hasErrors()) {
 			model.addAttribute("error", StatusCodes.INVALID_USERNAME_OR_PASSWORD);
 			return "registration-form";
 		}
 
-		
 		if (userValidatorService.tryToAddUserAndCheckIfSuccess(newUser)) {
 			return "redirect:/authentication/login";
 		}
@@ -57,13 +48,13 @@ public class AuthenticationController {
 		return "registration-form";
 	}
 	
-	@GetMapping("/authentication/login")
+	@GetMapping("login")
 	public String loginForm() {
 
 		return "login-form";
 	}
 	
-	@RequestMapping(value="/authentication/logout")
+	@RequestMapping(value="logout")
 	public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
 	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 	    if (auth != null){    

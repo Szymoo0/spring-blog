@@ -15,7 +15,7 @@ import pl.sglebocki.spring.blog.dto.PostShowDTO;
 import pl.sglebocki.spring.blog.services.PostsService;
 
 @Controller
-public class MainController {
+public class PublicPostsController {
 
 	@Value("${behave.posts.initial_posts_number}")
 	private int initialPostNumberOnPage;
@@ -27,7 +27,7 @@ public class MainController {
 	private static final int THE_BEAT_POSTS = -1;
 	
 	@Autowired 
-	private PostsService postsService;
+	PostsService postsService;
 	
 	@RequestMapping("/")
 	public String index(Model model, Principal principal) {
@@ -41,7 +41,7 @@ public class MainController {
 	public String showPost(@PathVariable("postId") Integer postId, Model model, Principal principal) {
 		PostShowDTO post = postsService.getPostById(getOptionalUsername(principal), postId);
 		if(post == null) {
-			return "redirect:/"; // TODO dac deafultowy tekscik jakis
+			throw new NotFoundException(String.format("Resource named: '/post/%d' doesn't exists.", postId));
 		}
 		model.addAttribute("posts", Arrays.asList(post));
 		model.addAttribute("theBestPosts", postsService.getTheBestPosts(THE_BEAT_POSTS, theBestPostOnPage));

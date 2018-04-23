@@ -10,21 +10,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
-	private static final String[] allowedToAllResources = {
-			"/css/**", 
-			"/js/**", 
-			"/images/**", 
-			"/dynamicimages/**"
-			};
-	private static final String[] allowedToAllPaths = {
-			"/",
-			"/post/**", 
-			"/authentication/login", 
-			"/authentication/register", 
-			"/authentication/save", 
-			"/posts/ajax/load-more-posts/**",
-			"/posts/ajax/change-reaction"
-			};
+	private static final String[] ALLOWED_ONLY_TO_AUTHENTICATED = {
+			"/posts/**"
+	};
 	
 	@Autowired
 	Unauthenticated401Response unauthenticated401Response;
@@ -33,9 +21,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-            	.antMatchers(allowedToAllResources).permitAll()
-                .antMatchers(allowedToAllPaths).permitAll()
-                .anyRequest().authenticated()
+            	.antMatchers(ALLOWED_ONLY_TO_AUTHENTICATED).authenticated()
+                .anyRequest().permitAll()
                 .and()
             .formLogin()
                 .loginPage("/authentication/login")
@@ -43,5 +30,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
             .logout()
                 .permitAll();
+
+        http.csrf().disable(); // TODO delete after development stage
+        http.headers().frameOptions().disable(); // TODO delete after development stage
     }
 }

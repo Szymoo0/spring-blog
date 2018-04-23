@@ -25,7 +25,7 @@ import pl.sglebocki.spring.blog.services.AjaxPostService;
 import pl.sglebocki.spring.blog.services.PostsService;
 
 @Controller
-@RequestMapping("/posts/ajax")
+@RequestMapping("/ajax/posts")
 public class AjaxPostController {
 
 	@Autowired

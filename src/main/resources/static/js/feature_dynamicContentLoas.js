@@ -3,7 +3,7 @@
 function _getOlderPosts(fromPost) {
 	$.ajax({
 		type:"GET",
-		url:"http://localhost:8080/posts/ajax/load-more-posts/" + fromPost,
+		url:"http://localhost:8080/ajax/posts/load-more-posts/" + fromPost,
 		dataType:"text",
 		timeout:10000,
 		success:function(recievedData) {
