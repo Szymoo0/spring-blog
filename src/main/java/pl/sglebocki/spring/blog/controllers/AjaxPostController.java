@@ -2,7 +2,6 @@ package pl.sglebocki.spring.blog.controllers;
 
 import java.security.Principal;
 import java.util.Collection;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -54,15 +53,9 @@ public class AjaxPostController {
 			Model model,
 			Principal principal) {
 
-		Collection<PostShowDTO> postsToShow = postsService.getPostsLowerThanId(getOptionalUsername(principal), fromPostId, additionalLoadPostNumber);
+		Collection<PostShowDTO> postsToShow = postsService.getPostsLowerThanIdWithAdditionalInfo(fromPostId, additionalLoadPostNumber, principal);
 		model.addAttribute("posts", postsToShow);
 		return "jsp-includes/posts";
 	}
-	
-	private Optional<String> getOptionalUsername(Principal principal) {
-		if (principal == null) {
-			return Optional.empty();
-		}
-		return Optional.of(principal.getName());
-	}
+
 }

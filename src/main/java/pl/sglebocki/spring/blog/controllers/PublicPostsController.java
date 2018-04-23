@@ -2,7 +2,6 @@ package pl.sglebocki.spring.blog.controllers;
 
 import java.security.Principal;
 import java.util.Arrays;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +30,7 @@ public class PublicPostsController {
 	
 	@RequestMapping("/")
 	public String index(Model model, Principal principal) {
-		model.addAttribute("posts", postsService.getPostsLowerThanId(getOptionalUsername(principal), NEWEST_POST_ID, initialPostNumberOnPage));
+		model.addAttribute("posts", postsService.getPostsLowerThanIdWithAdditionalInfo(NEWEST_POST_ID, initialPostNumberOnPage, principal));
 		model.addAttribute("theBestPosts", postsService.getTheBestPosts(THE_BEAT_POSTS, theBestPostOnPage));
 
 		return "index";
@@ -39,22 +38,15 @@ public class PublicPostsController {
 	
 	@RequestMapping("/post/{postId}")
 	public String showPost(@PathVariable("postId") Integer postId, Model model, Principal principal) {
-		PostShowDTO post = postsService.getPostById(getOptionalUsername(principal), postId);
+		PostShowDTO post = postsService.getPostByIdWithAdditionalInfo(postId, principal);
 		if(post == null) {
-			throw new NotFoundException(String.format("Resource named: '/post/%d' doesn't exists.", postId));
+			throw new NotFoundException(String.format("Resource named: 'post/%d' doesn't exists.", postId));
 		}
 		model.addAttribute("posts", Arrays.asList(post));
 		model.addAttribute("theBestPosts", postsService.getTheBestPosts(THE_BEAT_POSTS, theBestPostOnPage));
 		model.addAttribute("singlePostMainPage", true);
 		
 		return "index";
-	}
-	
-	private Optional<String> getOptionalUsername(Principal principal) {
-		if (principal == null) {
-			return Optional.empty();
-		}
-		return Optional.of(principal.getName());
 	}
 
 }

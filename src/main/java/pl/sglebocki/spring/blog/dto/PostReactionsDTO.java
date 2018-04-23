@@ -6,12 +6,11 @@ public class PostReactionsDTO {
 	private String userReaction;
 	
 	public PostReactionsDTO() {
-		this(0, 0, null);
+		this(0, 0);
 	}
-	public PostReactionsDTO(long likes, long dislikes, String userReaction) {
+	public PostReactionsDTO(long likes, long dislikes) {
 		this.likes = likes;
 		this.dislikes = dislikes;
-		this.userReaction = userReaction;
 	}
 	
 	public long getLikes() {
@@ -26,11 +25,11 @@ public class PostReactionsDTO {
 	public void setDislikes(Long dislikes) {
 		this.dislikes = dislikes;
 	}
-	public String getUserReaction() {
-		return userReaction;
-	}
 	public void setUserReaction(String userReaction) {
 		this.userReaction = userReaction;
+	}
+	public String getUserReaction() {
+		return userReaction;
 	}
 	
 }

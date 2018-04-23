@@ -1,12 +1,12 @@
 package pl.sglebocki.spring.blog.dao;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import pl.sglebocki.spring.blog.dto.DatePeriodDTO;
-import pl.sglebocki.spring.blog.dto.PostReactionsDTO;
+import pl.sglebocki.spring.blog.entities.PostAdditionalInfo;
 import pl.sglebocki.spring.blog.entities.PostEntity;
 import pl.sglebocki.spring.blog.entities.PostUserReactionEntity;
 import pl.sglebocki.spring.blog.entities.UserEntity;
@@ -32,11 +32,12 @@ class PostDAOJPAImpl implements PostsDAO {
 	@Autowired
 	private ImageDAOImpl imageSaver;
 	
-	private Map<PostsDAO.PostPickerStrategy, BiFunction<Integer, Integer, TypedQuery<PostEntity>>> strategyMap;
+	private Map<PostsDAO.PostPickerStrategy, PostDAOsearchStrategy> strategyMap;
 	
 	@PostConstruct
 	void postConstruct() {
-		IdentityHashMap<PostsDAO.PostPickerStrategy, BiFunction<Integer, Integer, TypedQuery<PostEntity>>> unmodifiableMap = new IdentityHashMap<>();
+		IdentityHashMap<PostsDAO.PostPickerStrategy, PostDAOsearchStrategy> unmodifiableMap = new IdentityHashMap<>();
+		unmodifiableMap.put(PostsDAO.PostPickerStrategy.BY_ID, new GetByIdStrategy(entityManager));
 		unmodifiableMap.put(PostsDAO.PostPickerStrategy.ID_DESCENDING, new IdDescendingStrategy(entityManager));
 		unmodifiableMap.put(PostsDAO.PostPickerStrategy.FROM_THE_BEST_TO_WORST, new FromTheBestToWorstStrategy(entityManager));
 		strategyMap = Collections.unmodifiableMap(unmodifiableMap);
@@ -46,6 +47,46 @@ class PostDAOJPAImpl implements PostsDAO {
 	public Collection<PostEntity> getPostsByStrategy(int fromPost, int number, PostPickerStrategy strategy) {
 		TypedQuery<PostEntity> query = strategyMap.get(strategy).apply(fromPost, number);
 		return query.getResultList();
+	}
+	
+	@Override
+	public Collection<PostAdditionalInfo> getPostAdditionalInfo(Collection<Long> postIdCollection, Optional<Principal> principal) {
+		Collection<PostAdditionalInfo> additionalInfoCollection = loadCustomAdditionalInfo(postIdCollection);
+		principal.ifPresent(p -> loadPrincipalSpecificAdditionalInfo(additionalInfoCollection, p));
+		return additionalInfoCollection;
+	}
+	
+	private Collection<PostAdditionalInfo> loadCustomAdditionalInfo(Collection<Long> postIdCollection) {
+		String queryString = "select " +
+				 "new pl.sglebocki.spring.blog.entities.PostAdditionalInfo " +
+				 "( " +
+				 	"ur.post.id, " +
+				 	"count(CASE WHEN ur.reactionType = :like THEN 1 END), " +
+				 	"count(CASE WHEN ur.reactionType = :dislike THEN 1 END)  " +
+				 ") " +
+				 "from PostUserReactionEntity ur " +
+				 "where ur.post.id in :postIdCollection " + 
+				 "group by ur.post.id";
+		TypedQuery<PostAdditionalInfo> query = entityManager.createQuery(queryString, PostAdditionalInfo.class);
+		query.setParameter("like", PostUserReactionEntity.ReactionType.LIKE);
+		query.setParameter("dislike", PostUserReactionEntity.ReactionType.DISLIKE); 
+		query.setParameter("postIdCollection", postIdCollection);
+		return query.getResultList();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void loadPrincipalSpecificAdditionalInfo(Collection<PostAdditionalInfo> additionalInfoCollection, Principal principal) {
+		Collection<Long> postIdCollection = additionalInfoCollection.stream().map(e -> e.getPostId()).collect(Collectors.toList());
+		String queryString = "select ur.post.id, ur.reactionType from PostUserReactionEntity ur where ur.post.id in :postIdCollection";
+		Query query = entityManager.createQuery(queryString);
+		query.setParameter("postIdCollection", postIdCollection);
+		Collection<Object[]> userReactions = query.getResultList();
+		userReactions.forEach(e -> {
+			additionalInfoCollection.stream()
+			.filter(f -> f.getPostId() == e[0])
+			.findAny()
+			.ifPresent(f -> f.setUserReaction(e[1].toString().toLowerCase()));
+		});		
 	}
 
 	@Override
@@ -102,36 +143,6 @@ class PostDAOJPAImpl implements PostsDAO {
 		return query.getResultList();
 	}
 	
-	@Override
-	public PostReactionsDTO getPostAdditionalInfo(Optional<String> username, long postId) {
-		String queryString = "select " + 
-							"count(CASE WHEN ur.post.id = :postId and ur.reactionType = :like THEN 1 END), " +
-							"count(CASE WHEN ur.post.id = :postId and ur.reactionType = :dislike THEN 1 END) " + 
-							"from PostUserReactionEntity ur";
-		Query query = entityManager.createQuery(queryString);
-		query.setParameter("like", PostUserReactionEntity.ReactionType.LIKE);
-		query.setParameter("dislike", PostUserReactionEntity.ReactionType.DISLIKE); 
-		query.setParameter("postId", postId);
-		Object[] queryResponse = (Object[])query.getSingleResult();
-		PostReactionsDTO returnValue = new PostReactionsDTO();
-		returnValue.setLikes((Long)queryResponse[0]);
-		returnValue.setDislikes((Long)queryResponse[1]);
-		username.ifPresent(e -> returnValue.setUserReaction(getUserReactionType(e, postId)));
-		return returnValue;
-	}
-	
-	private String getUserReactionType(String username, long postId) {
-		String dbQuery = "from PostUserReactionEntity react where react.post.id = :postId and react.user.username = :username";
-		TypedQuery<PostUserReactionEntity> query = entityManager.createQuery(dbQuery, PostUserReactionEntity.class);
-		query.setParameter("postId", postId);
-		query.setParameter("username", username);
-		List<PostUserReactionEntity> reactionList = query.getResultList();
-		if(reactionList.size() == 1) {
-			return reactionList.get(0).getReactionType().toString().toLowerCase();
-		}
-		return null;
-	}
-	
 	private void checkIfPostBelongToUser(String username, long postId) {
 		PostEntity post = entityManager.find(PostEntity.class, postId);
 		if(post == null) {
@@ -141,5 +152,5 @@ class PostDAOJPAImpl implements PostsDAO {
 			throw new TransactionRollbackException("Post with id " + postId + " doesn't belongs to " + username + ".");
 		}
 	}
-	
+
 }
