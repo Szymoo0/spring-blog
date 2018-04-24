@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 class ImageDAOImpl implements ImageDAO {
 
+	private static final AtomicLong IMAGE_ID = new AtomicLong();
+	
 	@Autowired
 	@Qualifier("imagePath")
 	private Path imagePath;
@@ -40,7 +43,7 @@ class ImageDAOImpl implements ImageDAO {
 			// TODO transaction rollback exception if !image.getContentType().startsWith("image")
 			
 			Date date = new Date();
-			String imageLink = userName + date.getTime() + image.getOriginalFilename();
+			String imageLink = userName + "_" + date.getTime() + "_" + IMAGE_ID.incrementAndGet() + "_" + image.getOriginalFilename();
 			try {
 				Path imageSavePath = imagePath.resolve(imageLink);
 				savedImages.add(imageSavePath);
