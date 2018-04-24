@@ -71,6 +71,5 @@ public class PostShowDTO {
 	public void setAdditionalInfo(PostReactionsDTO additionalInfo) {
 		this.additionalInfo = additionalInfo;
 	}
-
 	
 }

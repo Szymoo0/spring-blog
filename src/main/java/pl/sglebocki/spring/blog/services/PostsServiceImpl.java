@@ -35,15 +35,6 @@ class PostsServiceImpl implements PostsService {
 	private ImageDAO imageDAO;
 
 	@Override
-	public Collection<PostShowDTO> getPostsLowerThanId(int fromId, int numberOfPosts) {
-		Collection<PostEntity> postEntityCollection = postsDAO.getPostsByStrategy(
-				fromId, 
-				numberOfPosts, 
-				PostsDAO.PostPickerStrategy.ID_DESCENDING);
-		return getDTOcollectionFromEntityCollection(postEntityCollection);
-	}
-
-	@Override
 	public Collection<PostShowDTO> getPostsLowerThanIdWithAdditionalInfo(int fromId, int numberOfPosts, Principal principal) {
 		Collection<PostEntity> postEntityCollection = postsDAO.getPostsByStrategy(
 				fromId, 

@@ -9,7 +9,6 @@ import pl.sglebocki.spring.blog.dto.PostSaveDTO;
 
 public interface PostsService {
 
-	public Collection<PostShowDTO> getPostsLowerThanId(int fromId, int number);
 	public Collection<PostShowDTO> getPostsLowerThanIdWithAdditionalInfo(int fromId, int number, Principal principal);
 	public Collection<PostShowDTO> getTheBestPosts(int fromPosition, int number);
 	public PostShowDTO getPostById(long postId);

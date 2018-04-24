@@ -42,9 +42,4 @@ public class PostAdditionalInfo {
 		this.userReaction = userReaction;
 	}
 
-	@Override
-	public String toString() {
-		return "PostAdditionalInfo [postId=" + postId + ", likes=" + likes + ", dislikes=" + dislikes + "]";
-	}
-	
 }

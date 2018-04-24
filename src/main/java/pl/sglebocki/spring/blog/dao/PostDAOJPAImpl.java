@@ -77,9 +77,12 @@ class PostDAOJPAImpl implements PostsDAO {
 	@SuppressWarnings("unchecked")
 	private void loadPrincipalSpecificAdditionalInfo(Collection<PostAdditionalInfo> additionalInfoCollection, Principal principal) {
 		Collection<Long> postIdCollection = additionalInfoCollection.stream().map(e -> e.getPostId()).collect(Collectors.toList());
-		String queryString = "select ur.post.id, ur.reactionType from PostUserReactionEntity ur where ur.post.id in :postIdCollection";
+		String queryString = "select ur.post.id, ur.reactionType from PostUserReactionEntity ur " + 
+							 "where ur.post.id in :postIdCollection " + 
+							 "and ur.user.username = :username";
 		Query query = entityManager.createQuery(queryString);
 		query.setParameter("postIdCollection", postIdCollection);
+		query.setParameter("username", principal.getName());
 		Collection<Object[]> userReactions = query.getResultList();
 		userReactions.forEach(e -> {
 			additionalInfoCollection.stream()
