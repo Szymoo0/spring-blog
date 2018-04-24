@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.Collection;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,10 +42,10 @@ public class AjaxPostController {
 	public AjaxPostReactionsResponseDTO changeReactionRequest(
 			@RequestBody @Valid AjaxPostReactionsChangeRequestDTO changeReactionRequest, 
 			BindingResult bindingResult,
-			Principal principal) {
+			@NotNull Principal principal) {
 		if(principal == null)  throw new UnauthorizedException();
 		if(bindingResult.hasErrors()) throw new BadRequestException(); 
-		return ajaxPostService.processPostReactionChangeRequest(principal.getName(), changeReactionRequest);
+		return ajaxPostService.processPostReactionChangeRequest(principal, changeReactionRequest);
 	}
 	
 	@GetMapping(value="load-more-posts/{fromPostId}")

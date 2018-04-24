@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ import pl.sglebocki.spring.blog.dto.DatePeriodDTO;
 import pl.sglebocki.spring.blog.entities.PostAdditionalInfo;
 import pl.sglebocki.spring.blog.entities.PostEntity;
 import pl.sglebocki.spring.blog.entities.PostUserReactionEntity;
+import pl.sglebocki.spring.blog.entities.PostUserReactionEntity.ReactionType;
 import pl.sglebocki.spring.blog.entities.UserEntity;
 
 @Repository
@@ -154,6 +156,41 @@ class PostDAOJPAImpl implements PostsDAO {
 		if(!post.getAuthor().getUsername().equals(username)) {
 			throw new TransactionRollbackException("Post with id " + postId + " doesn't belongs to " + username + ".");
 		}
+	}
+
+	@Override
+	public void changeUserPostReaction(String username, Long postId, ReactionType newReactionType) {
+		Optional<PostUserReactionEntity> userPostReaction = getUserReactionEntity(username, postId);
+		if (userPostReaction.isPresent()) {
+			userPostReaction.ifPresent(f -> f.setReaction(newReactionType));
+		} else {
+			createNewPostReaction(username, postId, newReactionType);
+		}
+	}
+
+	private Optional<PostUserReactionEntity> getUserReactionEntity(String username, long postId) {
+		String dbQuery = "from PostUserReactionEntity react join fetch react.post join fetch react.user where react.post.id = :postId and react.user.username = :username";
+		TypedQuery<PostUserReactionEntity> query = entityManager.createQuery(dbQuery, PostUserReactionEntity.class);
+		query.setParameter("postId", postId);
+		query.setParameter("username", username);
+		List<PostUserReactionEntity> reactionList = query.getResultList();
+		if(reactionList.size() == 1) {
+			return Optional.of(reactionList.get(0));
+		}
+		return Optional.empty();
+	}
+	
+	private void createNewPostReaction(String username, Long postId, ReactionType newReactionType) {
+		PostUserReactionEntity newReaction = new PostUserReactionEntity();
+		UserEntity user = entityManager.find(UserEntity.class, username);
+		PostEntity post = entityManager.find(PostEntity.class, postId);
+		if(user == null || post == null) {
+			throw new TransactionRollbackException("Can't find user or post to change reaction status.");
+		}
+		newReaction.setUser(user);
+		newReaction.setPost(post);
+		newReaction.setReaction(newReactionType);
+		entityManager.persist(newReaction);
 	}
 
 }

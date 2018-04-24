@@ -7,6 +7,7 @@ import java.util.Optional;
 import pl.sglebocki.spring.blog.dto.DatePeriodDTO;
 import pl.sglebocki.spring.blog.entities.PostAdditionalInfo;
 import pl.sglebocki.spring.blog.entities.PostEntity;
+import pl.sglebocki.spring.blog.entities.PostUserReactionEntity;
 
 public interface PostsDAO {
 	
@@ -23,4 +24,5 @@ public interface PostsDAO {
 	public void saveOrUpdatePostContent(String username, PostEntity post);
 	public void delatePostById(String username, long postId);
 	public Collection<PostEntity> getPostsByUserName(String username, DatePeriodDTO datePeriod);
+	public void changeUserPostReaction(String username, Long postId, PostUserReactionEntity.ReactionType newReactionType);
 }
