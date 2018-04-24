@@ -22,7 +22,7 @@ class GetByIdStrategy implements PostDAOsearchStrategy {
 	
 	@Override
 	public TypedQuery<PostEntity> apply(Integer postId, Integer unused) {
-		String queryString = "from PostEntity posts where :postId = posts.id";
+		String queryString = "from PostEntity posts join fetch posts.author where :postId = posts.id";
 		TypedQuery<PostEntity> postQuery = entityManager.createQuery(queryString, PostEntity.class);
 		postQuery.setParameter("postId", (long)postId);
 		return postQuery;
@@ -50,7 +50,7 @@ class IdDescendingStrategy implements PostDAOsearchStrategy {
 	}
 	
 	private TypedQuery<PostEntity> getNewestPostsTypedQuery(int fromPostId, int number) {
-		String queryString = "from PostEntity posts where :fromPostId > posts.id order by posts.id desc";
+		String queryString = "from PostEntity posts join fetch posts.author where :fromPostId > posts.id order by posts.id desc";
 		TypedQuery<PostEntity> newestPostQuery = entityManager.createQuery(queryString, PostEntity.class).setMaxResults(number);
 		newestPostQuery.setParameter("fromPostId", (long)fromPostId);
 		return newestPostQuery;
@@ -81,7 +81,7 @@ class FromTheBestToWorstStrategy implements PostDAOsearchStrategy {
 	}
 	
 	private TypedQuery<PostEntity> getTypedQueryWithMaxResultLimit(int number) {
-		String queryString = "select posts from PostEntity posts, PostUserReactionEntity reactions where reactions.post.id = posts.id " +
+		String queryString = "select posts from PostEntity posts, PostUserReactionEntity reactions join fetch posts.author where reactions.post.id = posts.id " +
 				"group by posts.id order by " + 
 				"  count(CASE WHEN reactions.reactionType = :like THEN 1 END) " + 
 				"- count(CASE WHEN reactions.reactionType = :dislike THEN 1 END) " + 

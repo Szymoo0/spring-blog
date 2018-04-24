@@ -33,7 +33,7 @@ public class AjaxPostController {
 	@Autowired 
 	private PostsService postsService;
 	
-	@Value("${behave.posts.initial_posts_number}")
+	@Value("${behave.posts.additional_load_number}")
 	private int additionalLoadPostNumber;
 	
 	@PostMapping(value="change-reaction", produces="application/json")
