@@ -36,30 +36,39 @@ class PostsServiceImpl implements PostsService {
 
 	@Override
 	public Collection<PostShowDTO> getPostsLowerThanIdWithAdditionalInfo(int fromId, int numberOfPosts, Principal principal) {
-		Collection<PostEntity> postEntityCollection = postsDAO.getPostsByStrategy(
-				fromId, 
-				numberOfPosts, 
-				PostsDAO.PostPickerStrategy.ID_DESCENDING);
-		Collection<PostAdditionalInfo> postAdditionalInfoCollection = postsDAO.getPostAdditionalInfo(
-				postEntityCollection.stream()
-				.map(e -> e.getId())
-				.collect(Collectors.toList()), 
-				Optional.ofNullable(principal));
-		Collection<Pair<PostEntity, PostAdditionalInfo>> postWithInfoCollection = postEntityCollection.stream()
+		Collection<PostEntity> postEntityCollection = getPostEntities(fromId, numberOfPosts, PostsDAO.PostPickerStrategy.ID_DESCENDING);
+		Collection<PostAdditionalInfo> postAdditionalInfoCollection = getPostAdditionalInfos(postEntityCollection, principal);
+		Collection<Pair<PostEntity, PostAdditionalInfo>> postWithInfoCollection = getPairsCollection(postEntityCollection, postAdditionalInfoCollection);
+		return getDTOcollectionFromEntityPairCollection(postWithInfoCollection);
+	}
+
+	private Collection<PostEntity> getPostEntities(int fromId, int numberOfPosts, PostsDAO.PostPickerStrategy idDescending) {
+		return postsDAO.getPostsByStrategy(
+				fromId,
+				numberOfPosts,
+				idDescending);
+	}
+
+	private Collection<PostAdditionalInfo> getPostAdditionalInfos(Collection<PostEntity> postEntityCollection, Principal principal) {
+		return postsDAO.getPostAdditionalInfo(
+					postEntityCollection.stream()
+					.map(e -> e.getId())
+					.collect(Collectors.toList()),
+					Optional.ofNullable(principal));
+	}
+
+	private Collection<Pair<PostEntity, PostAdditionalInfo>> getPairsCollection(Collection<PostEntity> postEntityCollection, Collection<PostAdditionalInfo> postAdditionalInfoCollection) {
+		return postEntityCollection.stream()
 				.map(e -> Pair.of(e, postAdditionalInfoCollection.stream()
 						.filter(f -> f.getPostId() == e.getId())
 						.findFirst()
 						.orElse(new PostAdditionalInfo(e.getId())))
-					).collect(Collectors.toList());
-		return getDTOcollectionFromEntityPairCollection(postWithInfoCollection);
+				).collect(Collectors.toList());
 	}
 
 	@Override
 	public Collection<PostShowDTO> getTheBestPosts(int fromPosition, int numberOfPosts) {
-		Collection<PostEntity> postEntityCollection = postsDAO.getPostsByStrategy(
-				fromPosition, 
-				numberOfPosts, 
-				PostsDAO.PostPickerStrategy.FROM_THE_BEST_TO_WORST);
+		Collection<PostEntity> postEntityCollection = getPostEntities(fromPosition, numberOfPosts, PostsDAO.PostPickerStrategy.FROM_THE_BEST_TO_WORST);
 		return getDTOcollectionFromEntityCollection(postEntityCollection);
 	}
 

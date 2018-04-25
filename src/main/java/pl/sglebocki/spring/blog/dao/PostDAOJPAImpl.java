@@ -160,27 +160,32 @@ class PostDAOJPAImpl implements PostsDAO {
 
 	@Override
 	public void changeUserPostReaction(String username, Long postId, ReactionType newReactionType) {
-		Optional<PostUserReactionEntity> userPostReaction = getUserReactionEntity(username, postId);
-		if (userPostReaction.isPresent()) {
-			userPostReaction.ifPresent(f -> f.setReaction(newReactionType));
+		PostUserReactionEntity userPostReaction = getUserReactionEntity(username, postId);
+		if (userPostReaction != null) {
+			if(userPostReaction.getReactionType() == newReactionType) {
+				entityManager.remove(userPostReaction);
+			} else {
+				userPostReaction.setReaction(newReactionType);
+			}
 		} else {
-			createNewPostReaction(username, postId, newReactionType);
+			userPostReaction = createNewPostReaction(username, postId, newReactionType);
+			entityManager.persist(userPostReaction);
 		}
 	}
 
-	private Optional<PostUserReactionEntity> getUserReactionEntity(String username, long postId) {
+	private PostUserReactionEntity getUserReactionEntity(String username, long postId) {
 		String dbQuery = "from PostUserReactionEntity react join fetch react.post join fetch react.user where react.post.id = :postId and react.user.username = :username";
 		TypedQuery<PostUserReactionEntity> query = entityManager.createQuery(dbQuery, PostUserReactionEntity.class);
 		query.setParameter("postId", postId);
 		query.setParameter("username", username);
 		List<PostUserReactionEntity> reactionList = query.getResultList();
 		if(reactionList.size() == 1) {
-			return Optional.of(reactionList.get(0));
+			return reactionList.get(0);
 		}
-		return Optional.empty();
+		return null;
 	}
 	
-	private void createNewPostReaction(String username, Long postId, ReactionType newReactionType) {
+	private PostUserReactionEntity createNewPostReaction(String username, Long postId, ReactionType newReactionType) {
 		PostUserReactionEntity newReaction = new PostUserReactionEntity();
 		UserEntity user = entityManager.find(UserEntity.class, username);
 		PostEntity post = entityManager.find(PostEntity.class, postId);
@@ -190,7 +195,7 @@ class PostDAOJPAImpl implements PostsDAO {
 		newReaction.setUser(user);
 		newReaction.setPost(post);
 		newReaction.setReaction(newReactionType);
-		entityManager.persist(newReaction);
+		return newReaction;
 	}
 
 }

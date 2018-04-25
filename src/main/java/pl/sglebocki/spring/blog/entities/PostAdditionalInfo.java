@@ -15,6 +15,7 @@ public class PostAdditionalInfo {
 		this.postId = postId;
 		this.likes = likes;
 		this.dislikes = dislikes;
+		this.userReaction = "";
 	}
 	
 	public Long getPostId() {

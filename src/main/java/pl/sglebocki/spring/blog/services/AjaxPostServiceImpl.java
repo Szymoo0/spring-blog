@@ -30,23 +30,30 @@ class AjaxPostServiceImpl implements AjaxPostService {
 		ReactionType newReactionType = getReactionTypeFromDTO(changeReactionRequest);
 		postsDAO.changeUserPostReaction(principal.getName(), changeReactionRequest.getPostId(), newReactionType);
 		Collection<PostAdditionalInfo> postAdditionalInfoCollection = postsDAO.getPostAdditionalInfo(Arrays.asList(changeReactionRequest.getPostId()), Optional.of(principal));
-		if(postAdditionalInfoCollection.size() != 1) {
-			throw new TransactionRollbackException("Work on it"); // TODO work on it
+		PostAdditionalInfo postAdditionalInfo = null;
+		if(postAdditionalInfoCollection.size() == 1) {
+			postAdditionalInfo = postAdditionalInfoCollection.iterator().next();
 		}
-		PostAdditionalInfo postAdditionalInfo = postAdditionalInfoCollection.iterator().next();
-		AjaxPostReactionsResponseDTO returnJSONvalue = new AjaxPostReactionsResponseDTO(
-				postAdditionalInfo.getLikes(), 
-				postAdditionalInfo.getDislikes(), 
-				newReactionType.toString().toLowerCase());
-		return returnJSONvalue;
+		return getAjaxPostReactionsResponseDTO(postAdditionalInfo);
 	}
-	
+
 	private ReactionType getReactionTypeFromDTO(AjaxPostReactionsChangeRequestDTO changeReactionRequest) {
 		try {
 			return PostUserReactionEntity.ReactionType.valueOf(changeReactionRequest.getReactionType().toUpperCase());
 		} catch (IllegalArgumentException e) {
 			throw new TransactionRollbackException(e);
 		}
+	}
+
+	private AjaxPostReactionsResponseDTO getAjaxPostReactionsResponseDTO(PostAdditionalInfo postAdditionalInfo) {
+		if(postAdditionalInfo == null) {
+			return new AjaxPostReactionsResponseDTO();
+		}
+		AjaxPostReactionsResponseDTO returnJSONvalue = new AjaxPostReactionsResponseDTO(
+				postAdditionalInfo.getLikes(),
+				postAdditionalInfo.getDislikes(),
+				postAdditionalInfo.getUserReaction().toLowerCase());
+		return returnJSONvalue;
 	}
 
 }

@@ -15,7 +15,7 @@ public class ResourcesConfig implements WebMvcConfigurer {
 	@Autowired
 	@Qualifier("imagePath")
 	private Path imagePath;
-	
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/dynamicimages/**")
