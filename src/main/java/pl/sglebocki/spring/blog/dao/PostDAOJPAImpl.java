@@ -98,13 +98,13 @@ class PostDAOJPAImpl implements PostsDAO {
 	public PostEntity getPostById(long postId) {
 		return entityManager.find(PostEntity.class, postId);
 	}
-	
+
 	@Override
 	public PostEntity getPostByIdWithAuthentication(String username, long postId) {
-		checkIfPostBelongToUser(username, postId);
+		// checkIfPostBelongToUser(username, postId);
 		return getPostById(postId);
 	}
-	
+
 	@Override
 	public void saveOrUpdatePostContent(String username, PostEntity postToMerge) {
 		if(postToMerge.getAuthor() == null) {

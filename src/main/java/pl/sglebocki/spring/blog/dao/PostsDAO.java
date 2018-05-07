@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.Optional;
 
+import org.springframework.security.access.prepost.PostAuthorize;
 import pl.sglebocki.spring.blog.dto.DatePeriodDTO;
 import pl.sglebocki.spring.blog.entities.PostAdditionalInfo;
 import pl.sglebocki.spring.blog.entities.PostEntity;
@@ -20,6 +21,7 @@ public interface PostsDAO {
 	public Collection<PostEntity> getPostsByStrategy(int fromPost, int number, PostPickerStrategy strategy);
 	public Collection<PostAdditionalInfo> getPostAdditionalInfo(Collection<Long> postIdCollection, Optional<Principal> username);
 	public PostEntity getPostById(long postId);
+	@PostAuthorize("returnObject .author.username == principal.username")
 	public PostEntity getPostByIdWithAuthentication(String username, long postId);
 	public void saveOrUpdatePostContent(String username, PostEntity post);
 	public void delatePostById(String username, long postId);
