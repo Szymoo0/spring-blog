@@ -29,7 +29,7 @@ class AjaxPostServiceImpl implements AjaxPostService {
 	public AjaxPostReactionsResponseDTO processPostReactionChangeRequest(Principal principal, AjaxPostReactionsChangeRequestDTO changeReactionRequest) {
 		ReactionType newReactionType = getReactionTypeFromDTO(changeReactionRequest);
 		postsDAO.changeUserPostReaction(principal.getName(), changeReactionRequest.getPostId(), newReactionType);
-		Collection<PostAdditionalInfo> postAdditionalInfoCollection = postsDAO.getPostAdditionalInfo(Arrays.asList(changeReactionRequest.getPostId()), Optional.of(principal));
+		Collection<PostAdditionalInfo> postAdditionalInfoCollection = postsDAO.getPostsAdditionalInfo(Arrays.asList(changeReactionRequest.getPostId()), Optional.of(principal));
 		PostAdditionalInfo postAdditionalInfo = null;
 		if(postAdditionalInfoCollection.size() == 1) {
 			postAdditionalInfo = postAdditionalInfoCollection.iterator().next();

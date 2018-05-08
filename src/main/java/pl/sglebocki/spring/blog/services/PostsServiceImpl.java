@@ -50,7 +50,7 @@ class PostsServiceImpl implements PostsService {
 	}
 
 	private Collection<PostAdditionalInfo> getPostAdditionalInfos(Collection<PostEntity> postEntityCollection, Principal principal) {
-		return postsDAO.getPostAdditionalInfo(
+		return postsDAO.getPostsAdditionalInfo(
 					postEntityCollection.stream()
 					.map(e -> e.getId())
 					.collect(Collectors.toList()),
@@ -74,17 +74,18 @@ class PostsServiceImpl implements PostsService {
 
 	@Override
 	public PostShowDTO getPostById(long postId) {
-		PostEntity postEntity = postsDAO.getPostById(postId);
-		return getDTOobjectFromEntityObject(postEntity);
+		return postsDAO.findById(postId)
+				.map(entity -> getDTOobjectFromEntityObject(entity))
+				.orElse(null);
 	}
 	
 	@Override
-	public PostShowDTO getPostByIdWithAdditionalInfo(int postId, Principal principal) {
-		PostEntity postEntity = postsDAO.getPostById(postId);
+	public PostShowDTO getPostByIdWithAdditionalInfo(long postId, Principal principal) {
+		PostEntity postEntity = postsDAO.findById(postId).orElse(null);
 		if (postEntity == null) {
 			return null;
 		}
-		Collection<PostAdditionalInfo> postAdditionalInfoCollection = postsDAO.getPostAdditionalInfo(
+		Collection<PostAdditionalInfo> postAdditionalInfoCollection = postsDAO.getPostsAdditionalInfo(
 				Arrays.asList(postEntity.getId()),
 				Optional.ofNullable(principal));
 		if(postAdditionalInfoCollection.size() != 1) {
@@ -94,8 +95,8 @@ class PostsServiceImpl implements PostsService {
 	}
 
 	@Override
-	public PostSaveDTO getPostByIdToModify(String uesrname, Integer postId) {
-		PostEntity postEntity = postsDAO.getPostByIdWithAuthentication(uesrname, postId);
+	public PostSaveDTO getPostByIdToModify(long postId) {
+		PostEntity postEntity = postsDAO.findByIdWithAuth(postId).orElseThrow(() -> new TransactionRollbackException("No post with id " + postId));
 		PostSaveDTO post = new PostSaveDTO();
 		post.setId(postEntity.getId());
 		post.setTitle(postEntity.getTitle());
@@ -113,7 +114,7 @@ class PostsServiceImpl implements PostsService {
 		} else {
 			postEntity = createNewEntity(username, post);
 		}
-		postsDAO.saveOrUpdatePostContent(username, postEntity);
+		postsDAO.saveOrUpdatePost(username, postEntity);
 	}
 	
 	private boolean checkIfPostExists(PostSaveDTO post) {
@@ -121,7 +122,7 @@ class PostsServiceImpl implements PostsService {
 	}
 	
 	private PostEntity updateExistingEntity(String username, PostSaveDTO post) {
-		PostEntity postEntity = postsDAO.getPostById(post.getId());
+		PostEntity postEntity = postsDAO.findById(post.getId()).orElseThrow(() -> new TransactionRollbackException("Post with id " + post.getId() + " not found"));
 		Optional<String> imageLink = imageDAO.saveImageAndGetImageLink(username, post.getImage());
 		postEntity.setTitle(post.getTitle());
 		postEntity.setContent(post.getContent());

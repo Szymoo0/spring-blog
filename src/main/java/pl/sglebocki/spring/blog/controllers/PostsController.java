@@ -86,8 +86,8 @@ public class PostsController {
 	}
 	
 	@RequestMapping("/edit/{postId}")
-	public String myPostsEdit(@PathVariable("postId") Integer postId, Model model, Principal principal) {
-		PostSaveDTO post = postsService.getPostByIdToModify(principal.getName(), postId);
+	public String myPostsEdit(@PathVariable("postId") Long postId, Model model, Principal principal) {
+		PostSaveDTO post = postsService.getPostByIdToModify(postId);
         if (post == null) {
             return "redirect:/";
         }

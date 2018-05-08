@@ -12,8 +12,8 @@ public interface PostsService {
 	public Collection<PostShowDTO> getPostsLowerThanIdWithAdditionalInfo(int fromId, int number, Principal principal);
 	public Collection<PostShowDTO> getTheBestPosts(int fromPosition, int number);
 	public PostShowDTO getPostById(long postId);
-	public PostShowDTO getPostByIdWithAdditionalInfo(int postId, Principal principal);
-	public PostSaveDTO getPostByIdToModify(String name, Integer postId);
+	public PostShowDTO getPostByIdWithAdditionalInfo(long postId, Principal principal);
+	public PostSaveDTO getPostByIdToModify(long postId);
 	public void saveOrUpdatePost(String userName,PostSaveDTO post);
 	public Collection<PostShowDTO> getPostsByUserName(String userName, DatePeriodDTO datePeriod);
 	public void delatePostById(String userName, long postId);

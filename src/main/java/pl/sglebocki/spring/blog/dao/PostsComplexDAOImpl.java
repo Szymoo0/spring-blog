@@ -26,7 +26,7 @@ import pl.sglebocki.spring.blog.entities.PostUserReactionEntity.ReactionType;
 import pl.sglebocki.spring.blog.entities.UserEntity;
 
 @Repository
-class PostDAOJPAImpl implements PostsDAO {
+class PostsComplexDAOImpl implements PostsComplexDAO {
 	
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -34,14 +34,14 @@ class PostDAOJPAImpl implements PostsDAO {
 	@Autowired
 	private ImageDAOImpl imageSaver;
 	
-	private Map<PostsDAO.PostPickerStrategy, PostDAOsearchStrategy> strategyMap;
+	private Map<PostsComplexDAO.PostPickerStrategy, PostDAOsearchStrategy> strategyMap;
 	
 	@PostConstruct
 	void postConstruct() {
-		IdentityHashMap<PostsDAO.PostPickerStrategy, PostDAOsearchStrategy> unmodifiableMap = new IdentityHashMap<>();
-		unmodifiableMap.put(PostsDAO.PostPickerStrategy.BY_ID, new GetByIdStrategy(entityManager));
-		unmodifiableMap.put(PostsDAO.PostPickerStrategy.ID_DESCENDING, new IdDescendingStrategy(entityManager));
-		unmodifiableMap.put(PostsDAO.PostPickerStrategy.FROM_THE_BEST_TO_WORST, new FromTheBestToWorstStrategy(entityManager));
+		IdentityHashMap<PostsComplexDAO.PostPickerStrategy, PostDAOsearchStrategy> unmodifiableMap = new IdentityHashMap<>();
+		unmodifiableMap.put(PostsComplexDAO.PostPickerStrategy.BY_ID, new GetByIdStrategy(entityManager));
+		unmodifiableMap.put(PostsComplexDAO.PostPickerStrategy.ID_DESCENDING, new IdDescendingStrategy(entityManager));
+		unmodifiableMap.put(PostsComplexDAO.PostPickerStrategy.FROM_THE_BEST_TO_WORST, new FromTheBestToWorstStrategy(entityManager));
 		strategyMap = Collections.unmodifiableMap(unmodifiableMap);
 	}
 
@@ -52,7 +52,7 @@ class PostDAOJPAImpl implements PostsDAO {
 	}
 	
 	@Override
-	public Collection<PostAdditionalInfo> getPostAdditionalInfo(Collection<Long> postIdCollection, Optional<Principal> principal) {
+	public Collection<PostAdditionalInfo> getPostsAdditionalInfo(Collection<Long> postIdCollection, Optional<Principal> principal) {
 		Collection<PostAdditionalInfo> additionalInfoCollection = loadCustomAdditionalInfo(postIdCollection);
 		principal.ifPresent(p -> loadPrincipalSpecificAdditionalInfo(additionalInfoCollection, p));
 		return additionalInfoCollection;
@@ -95,18 +95,7 @@ class PostDAOJPAImpl implements PostsDAO {
 	}
 
 	@Override
-	public PostEntity getPostById(long postId) {
-		return entityManager.find(PostEntity.class, postId);
-	}
-
-	@Override
-	public PostEntity getPostByIdWithAuthentication(String username, long postId) {
-		// checkIfPostBelongToUser(username, postId);
-		return getPostById(postId);
-	}
-
-	@Override
-	public void saveOrUpdatePostContent(String username, PostEntity postToMerge) {
+	public void saveOrUpdatePost(String username, PostEntity postToMerge) {
 		if(postToMerge.getAuthor() == null) {
 			UserEntity author = entityManager.find(UserEntity.class, username);
 			if(author == null) {
